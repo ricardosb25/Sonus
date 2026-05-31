@@ -69,8 +69,13 @@ export function useSonusLibrary({
 
   useEffect(() => {
     async function boot() {
-      setLibrary(await libraryRepository.load());
-      setReady(true);
+      try {
+        setLibrary(await libraryRepository.load());
+      } catch {
+        setLibrary(initialLibrary);
+      } finally {
+        setReady(true);
+      }
     }
 
     boot();

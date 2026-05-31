@@ -1,4 +1,4 @@
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import { AppSettings, defaultSettings } from '../domain/settings';
 
 const DOCUMENT_DIR = ((FileSystem as any).documentDirectory ?? '') as string;

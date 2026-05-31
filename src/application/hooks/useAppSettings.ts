@@ -22,8 +22,13 @@ export function useAppSettings({
 
   useEffect(() => {
     async function boot() {
-      setSettings(await settingsRepository.load());
-      setReady(true);
+      try {
+        setSettings(await settingsRepository.load());
+      } catch {
+        setSettings(defaultSettings);
+      } finally {
+        setReady(true);
+      }
     }
 
     boot();
