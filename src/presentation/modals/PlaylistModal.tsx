@@ -6,6 +6,7 @@ import { Playlist, Track } from '../../domain/models';
 import { ActionButton } from '../components/ActionButton';
 import { Cover } from '../components/Cover';
 import { EmptyState } from '../components/EmptyState';
+import { useI18n } from '../i18n';
 import { useThemedStyles } from '../styles/styles';
 
 type Props = {
@@ -21,6 +22,7 @@ type Props = {
 
 export function PlaylistModal(props: Props) {
   const styles = useThemedStyles();
+  const t = useI18n();
   const [name, setName] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
@@ -53,7 +55,7 @@ export function PlaylistModal(props: Props) {
         <View style={styles.modalHeader}>
           <TextInput value={name} onChangeText={setName} style={styles.modalTitleInput} />
           <TouchableOpacity onPress={props.onClose}>
-            <Text style={styles.close}>Fechar</Text>
+            <Text style={styles.close}>{t('common.close')}</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.playlistTools}>
@@ -61,27 +63,27 @@ export function PlaylistModal(props: Props) {
             style={styles.primaryButton}
             onPress={() => props.playlist && props.onRename(props.playlist, name)}
           >
-            <Text style={styles.primaryButtonText}>Salvar</Text>
+            <Text style={styles.primaryButtonText}>{t('common.save')}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.secondaryButton} onPress={() => props.onPlay(tracks)}>
-            <Text style={styles.secondaryButtonText}>Tocar</Text>
+            <Text style={styles.secondaryButtonText}>{t('common.play')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.dangerButton}
             onPress={() => props.playlist && props.onDelete(props.playlist)}
           >
-            <Text style={styles.dangerText}>Excluir</Text>
+            <Text style={styles.dangerText}>{t('common.delete')}</Text>
           </TouchableOpacity>
         </View>
         {selectionMode && (
           <View style={styles.batchBar}>
-            <Text style={styles.batchTitle}>{selectedIds.length} selecionada(s)</Text>
+            <Text style={styles.batchTitle}>{t('batch.selected', { count: selectedIds.length })}</Text>
             <View style={styles.batchActions}>
               <TouchableOpacity style={[styles.batchButton, styles.batchDanger]} onPress={removeSelected}>
                 <Text style={styles.batchDangerText}>Remover da playlist</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.batchButton} onPress={() => setSelectedIds([])}>
-                <Text style={styles.batchButtonText}>Limpar</Text>
+                <Text style={styles.batchButtonText}>{t('common.clear')}</Text>
               </TouchableOpacity>
             </View>
           </View>

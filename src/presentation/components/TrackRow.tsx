@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Track } from '../../domain/models';
+import { useI18n } from '../i18n';
 import { useThemedStyles } from '../styles/styles';
 import { ActionButton } from './ActionButton';
 import { Cover } from './Cover';
@@ -29,6 +30,7 @@ export function TrackRow({
   onToggleSelection,
 }: Props) {
   const styles = useThemedStyles();
+  const t = useI18n();
 
   return (
     <View style={[styles.row, selected && styles.rowSelected]}>
@@ -53,9 +55,9 @@ export function TrackRow({
       {!selectionMode && (
         <View style={styles.actions}>
           <ActionButton label={track.isFavorite ? 'Fav' : 'Like'} onPress={onFavorite} active={track.isFavorite} />
-          <ActionButton label="Letra" onPress={onLyrics} />
-          <ActionButton label="Lista" onPress={onPlaylist} />
-          <ActionButton label="Del" onPress={onDelete} danger />
+          <ActionButton label={t('track.lyrics')} onPress={onLyrics} />
+          <ActionButton label={t('track.list')} onPress={onPlaylist} />
+          <ActionButton label={t('track.deleteShort')} onPress={onDelete} danger />
         </View>
       )}
     </View>

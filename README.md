@@ -11,6 +11,7 @@ Ele foi reconstruido com Expo + React Native, armazenamento local, player nativo
 - Importacao de arquivos de audio do dispositivo.
 - Biblioteca offline persistida no armazenamento interno do app.
 - Player com fila, progresso, modos aleatorio, repetir uma musica e nao repetir.
+- Reproducao em segundo plano com mini player/controles de midia na notificacao e tela bloqueada.
 - Playlists com criacao, edicao, exclusao e acoes em lote.
 - Selecao multipla para favoritar, adicionar a playlist e excluir do dispositivo.
 - Letras online via Lyrics.ovh, salvas quando encontradas.
@@ -74,6 +75,8 @@ npm run android
 ```
 
 Para testar recursos nativos com o mesmo comportamento da build final, prefira `npm run android` ou uma build EAS instalada no aparelho.
+
+Recursos como widget Android, audio em segundo plano e mini player de notificacao dependem de build nativa. Eles nao funcionam corretamente no Expo Go.
 
 ## Gerar APK
 

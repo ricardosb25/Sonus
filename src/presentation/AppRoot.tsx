@@ -22,6 +22,7 @@ import { DownloadScreen } from './screens/DownloadScreen';
 import { DownloadsQueueScreen } from './screens/DownloadsQueueScreen';
 import { LibraryScreen } from './screens/LibraryScreen';
 import { PlaylistsScreen } from './screens/PlaylistsScreen';
+import { I18nProvider } from './i18n';
 import { ThemeProvider, useThemedStyles } from './styles/styles';
 
 export function AppRoot() {
@@ -30,7 +31,9 @@ export function AppRoot() {
   return (
     <SafeAreaProvider>
       <ThemeProvider themeMode={settings.state.settings.themeMode}>
-        <AppRootContent settings={settings} />
+        <I18nProvider language={settings.state.settings.language}>
+          <AppRootContent settings={settings} />
+        </I18nProvider>
       </ThemeProvider>
     </SafeAreaProvider>
   );

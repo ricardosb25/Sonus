@@ -2,6 +2,7 @@ import React from 'react';
 import { ActivityIndicator, Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Track } from '../../domain/models';
+import { useI18n } from '../i18n';
 import { useThemedStyles } from '../styles/styles';
 
 type Props = {
@@ -12,6 +13,7 @@ type Props = {
 
 export function LyricsModal({ track, loading, onClose }: Props) {
   const styles = useThemedStyles();
+  const t = useI18n();
 
   return (
     <Modal visible={!!track} animationType="slide" onRequestClose={onClose}>
@@ -19,7 +21,7 @@ export function LyricsModal({ track, loading, onClose }: Props) {
         <View style={styles.modalHeader}>
           <Text style={styles.sectionTitle} numberOfLines={1}>{track?.title}</Text>
           <TouchableOpacity onPress={onClose}>
-            <Text style={styles.close}>Fechar</Text>
+            <Text style={styles.close}>{t('common.close')}</Text>
           </TouchableOpacity>
         </View>
         {loading ? (

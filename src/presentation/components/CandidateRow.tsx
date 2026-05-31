@@ -2,6 +2,7 @@ import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { DownloadCandidate } from '../../domain/models';
 import { formatDuration } from '../../shared/formatDuration';
+import { useI18n } from '../i18n';
 import { useThemedStyles } from '../styles/styles';
 import { Cover } from './Cover';
 
@@ -13,6 +14,7 @@ type Props = {
 
 export function CandidateRow({ item, busy, onDownload }: Props) {
   const styles = useThemedStyles();
+  const t = useI18n();
   const canDownload = item.downloadable !== false && !!item.previewUrl;
 
   return (
@@ -36,7 +38,9 @@ export function CandidateRow({ item, busy, onDownload }: Props) {
         onPress={onDownload}
         disabled={busy || !canDownload}
       >
-        <Text style={styles.iconButtonText}>{busy ? '...' : canDownload ? 'Baixar' : 'URL'}</Text>
+        <Text style={styles.iconButtonText}>
+          {busy ? '...' : canDownload ? t('candidate.download') : t('candidate.url')}
+        </Text>
       </TouchableOpacity>
     </View>
   );

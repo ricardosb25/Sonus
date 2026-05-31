@@ -9,6 +9,7 @@ import { PlaybackMode } from '../../domain/models';
 import { formatDuration } from '../../shared/formatDuration';
 import { Cover } from '../components/Cover';
 import { EqualizerPanel } from '../components/EqualizerPanel';
+import { useI18n } from '../i18n';
 import { useThemedStyles } from '../styles/styles';
 
 type Props = {
@@ -33,6 +34,7 @@ export function PlayerModal({
   onEqualizerBandGainChange,
 }: Props) {
   const styles = useThemedStyles();
+  const t = useI18n();
   const [localMode, setLocalMode] = useState<PlaybackMode>('no-repeat');
   const activeMode = playback.mode ?? localMode;
 
@@ -45,15 +47,15 @@ export function PlayerModal({
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
       <SafeAreaView style={styles.player} edges={['top', 'bottom', 'left', 'right']}>
         <View style={styles.modalHeader}>
-          <Text style={styles.sectionTitle}>Tocando agora</Text>
+          <Text style={styles.sectionTitle}>{t('player.nowPlaying')}</Text>
           <TouchableOpacity onPress={onClose}>
-            <Text style={styles.close}>Fechar</Text>
+            <Text style={styles.close}>{t('common.close')}</Text>
           </TouchableOpacity>
         </View>
         <ScrollView contentContainerStyle={styles.playerBody}>
           <Cover uri={playback.track?.artwork} />
-          <Text style={styles.nowTitle} numberOfLines={2}>{playback.track?.title ?? 'Nada tocando'}</Text>
-          <Text style={styles.nowArtist}>{playback.track?.artist ?? 'Escolha uma musica na biblioteca'}</Text>
+          <Text style={styles.nowTitle} numberOfLines={2}>{playback.track?.title ?? t('player.nothingPlaying')}</Text>
+          <Text style={styles.nowArtist}>{playback.track?.artist ?? t('player.chooseSong')}</Text>
           <Slider
             style={styles.slider}
             minimumValue={0}
@@ -74,7 +76,7 @@ export function PlayerModal({
               onPress={() => changePlaybackMode('shuffle')}
             >
               <Text style={[styles.modeText, activeMode === 'shuffle' && styles.modeTextActive]}>
-                Aleatorio
+                {t('player.shuffle')}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -82,7 +84,7 @@ export function PlayerModal({
               onPress={() => changePlaybackMode('repeat-one')}
             >
               <Text style={[styles.modeText, activeMode === 'repeat-one' && styles.modeTextActive]}>
-                Repetir 1
+                {t('player.repeatOne')}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -90,22 +92,22 @@ export function PlayerModal({
               onPress={() => changePlaybackMode('no-repeat')}
             >
               <Text style={[styles.modeText, activeMode === 'no-repeat' && styles.modeTextActive]}>
-                Nao repetir
+                {t('player.noRepeat')}
               </Text>
             </TouchableOpacity>
           </View>
           <View style={styles.playerControls}>
             <TouchableOpacity style={styles.roundButton} onPress={trackPlaybackService.previous}>
-              <Text style={styles.roundText}>Anterior</Text>
+              <Text style={styles.roundText}>{t('player.previous')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.playButton}
               onPress={onTogglePlayback}
             >
-              <Text style={styles.playText}>{playback.playing ? 'Pausar' : 'Tocar'}</Text>
+              <Text style={styles.playText}>{playback.playing ? t('common.pause') : t('common.play')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.roundButton} onPress={trackPlaybackService.next}>
-              <Text style={styles.roundText}>Proxima</Text>
+              <Text style={styles.roundText}>{t('player.next')}</Text>
             </TouchableOpacity>
           </View>
           <EqualizerPanel

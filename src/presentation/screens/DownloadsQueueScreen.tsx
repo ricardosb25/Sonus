@@ -4,6 +4,7 @@ import { DownloadQueueItem } from '../../domain/models';
 import { formatDuration } from '../../shared/formatDuration';
 import { Cover } from '../components/Cover';
 import { EmptyState } from '../components/EmptyState';
+import { useI18n } from '../i18n';
 import { useThemedStyles } from '../styles/styles';
 
 type Props = {
@@ -15,16 +16,9 @@ type Props = {
 
 type DownloadTab = 'active' | 'completed';
 
-const statusLabel: Record<DownloadQueueItem['status'], string> = {
-  queued: 'Na fila',
-  downloading: 'Baixando',
-  paused: 'Pausado',
-  completed: 'Concluido',
-  error: 'Erro',
-};
-
 export function DownloadsQueueScreen({ downloads, onPause, onResume, onRemove }: Props) {
   const styles = useThemedStyles();
+  const t = useI18n();
   const [activeTab, setActiveTab] = useState<DownloadTab>('active');
   const activeDownloads = useMemo(
     () => downloads.filter((item) => item.status !== 'completed'),
@@ -37,8 +31,15 @@ export function DownloadsQueueScreen({ downloads, onPause, onResume, onRemove }:
   const visibleDownloads = activeTab === 'active' ? activeDownloads : completedDownloads;
   const emptyText =
     activeTab === 'active'
-      ? 'Nenhum download em progresso. Busque uma musica e toque em Baixar para acompanhar por aqui.'
-      : 'Nenhum download concluido ainda.';
+      ? t('downloads.emptyActive')
+      : t('downloads.emptyCompleted');
+  const statusLabel: Record<DownloadQueueItem['status'], string> = {
+    queued: t('downloads.statusQueued'),
+    downloading: t('downloads.statusDownloading'),
+    paused: t('downloads.statusPaused'),
+    completed: t('downloads.statusCompleted'),
+    error: t('downloads.statusError'),
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -49,7 +50,7 @@ export function DownloadsQueueScreen({ downloads, onPause, onResume, onRemove }:
           onPress={() => setActiveTab('active')}
         >
           <Text style={[styles.segmentText, activeTab === 'active' && styles.segmentTextActive]}>
-            Em progresso ({activeDownloads.length})
+            {t('downloads.active')} ({activeDownloads.length})
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -57,7 +58,7 @@ export function DownloadsQueueScreen({ downloads, onPause, onResume, onRemove }:
           onPress={() => setActiveTab('completed')}
         >
           <Text style={[styles.segmentText, activeTab === 'completed' && styles.segmentTextActive]}>
-            Concluidos ({completedDownloads.length})
+            {t('downloads.completed')} ({completedDownloads.length})
           </Text>
         </TouchableOpacity>
       </View>
@@ -92,19 +93,19 @@ export function DownloadsQueueScreen({ downloads, onPause, onResume, onRemove }:
               <View style={styles.downloadActions}>
                 {canPause && (
                   <TouchableOpacity style={styles.batchButton} onPress={() => onPause(item)}>
-                    <Text style={styles.batchButtonText}>Pausar</Text>
+                    <Text style={styles.batchButtonText}>{t('common.pause')}</Text>
                   </TouchableOpacity>
                 )}
                 {canResume && (
                   <TouchableOpacity style={styles.batchButton} onPress={() => onResume(item)}>
-                    <Text style={styles.batchButtonText}>Retomar</Text>
+                    <Text style={styles.batchButtonText}>{t('downloads.resume')}</Text>
                   </TouchableOpacity>
                 )}
                 <TouchableOpacity
                   style={[styles.batchButton, styles.batchDanger]}
                   onPress={() => onRemove(item)}
                 >
-                  <Text style={styles.batchDangerText}>Excluir</Text>
+                  <Text style={styles.batchDangerText}>{t('common.delete')}</Text>
                 </TouchableOpacity>
               </View>
             </View>

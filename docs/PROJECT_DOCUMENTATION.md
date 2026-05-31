@@ -42,6 +42,9 @@ Sonus e um aplicativo mobile para ouvir musica offline. O usuario pode buscar pr
 
 - Usa `expo-audio`.
 - Suporta fila, play/pause, anterior, proxima e seek.
+- Mantem reproducao em segundo plano com `shouldPlayInBackground`.
+- Ativa controles de lock screen/notificacao com `setActiveForLockScreen`.
+- Solicita permissao de notificacao no Android quando necessario.
 - Modos:
   - Aleatorio.
   - Repetir uma musica.
@@ -62,6 +65,7 @@ Sonus e um aplicativo mobile para ouvir musica offline. O usuario pode buscar pr
   - Portugues Brasileiro.
   - Ingles.
   - Japones.
+- A camada `src/presentation/i18n.tsx` traduz as principais telas, abas, controles e configuracoes conforme o idioma escolhido.
 - Equalizador.
 - Motores de busca.
 - Persistencia em `settings.json`.
@@ -119,6 +123,7 @@ interface AppSettings {
 - YouTube nao faz extracao/download de audio no Sonus; usa apenas busca oficial com `EXPO_PUBLIC_YOUTUBE_API_KEY`.
 - Para baixar catalogo mainstream completo dentro do app, seria preciso uma API/licenca comercial que autorize download offline.
 - Widgets Android dependem de prebuild/build nativo; nao aparecem apenas no Expo Go.
+- Mini player de notificacao e reproducao em segundo plano tambem exigem build nativa instalada.
 
 ## Proximos passos recomendados
 

@@ -2,6 +2,7 @@ import React from 'react';
 import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { DownloadCandidate, ImportedAudioFile } from '../../domain/models';
 import { CandidateRow } from '../components/CandidateRow';
+import { useI18n } from '../i18n';
 import { useThemedStyles } from '../styles/styles';
 
 type Props = {
@@ -36,16 +37,17 @@ type Props = {
 
 export function DownloadScreen(props: Props) {
   const styles = useThemedStyles();
+  const t = useI18n();
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContent}>
-      <Text style={styles.sectionTitle}>Baixar musicas</Text>
+      <Text style={styles.sectionTitle}>{t('download.title')}</Text>
       <View style={styles.searchBar}>
         <TextInput
           value={props.query}
           onChangeText={props.onQueryChange}
           onSubmitEditing={props.onSearch}
-          placeholder="Buscar artista, album ou musica"
+          placeholder={t('download.searchPlaceholder')}
           placeholderTextColor="#7f8c8d"
           style={styles.input}
           returnKeyType="search"
@@ -55,7 +57,7 @@ export function DownloadScreen(props: Props) {
           onPress={props.onSearch}
           disabled={props.busy === 'search'}
         >
-          <Text style={styles.primaryButtonText}>{props.busy === 'search' ? '...' : 'Buscar'}</Text>
+          <Text style={styles.primaryButtonText}>{props.busy === 'search' ? '...' : t('download.searchButton')}</Text>
         </TouchableOpacity>
       </View>
 
@@ -70,12 +72,12 @@ export function DownloadScreen(props: Props) {
       {props.canShowMore && (
         <TouchableOpacity style={styles.showMoreButton} onPress={props.onShowMore}>
           <Text style={styles.showMoreText}>
-            Mostrar mais ({props.results.length}/{props.totalResults})
+            {t('download.showMore', { visible: props.results.length, total: props.totalResults })}
           </Text>
         </TouchableOpacity>
       )}
 
-      <Text style={styles.sectionTitle}>URL direta</Text>
+      <Text style={styles.sectionTitle}>{t('download.directUrl')}</Text>
       <TextInput
         value={props.directUrl}
         onChangeText={props.onDirectUrlChange}
@@ -84,17 +86,17 @@ export function DownloadScreen(props: Props) {
         style={styles.inputBlock}
       />
       <View style={styles.twoColumns}>
-        <TextInput value={props.directTitle} onChangeText={props.onDirectTitleChange} placeholder="Titulo" placeholderTextColor="#7f8c8d" style={styles.smallInput} />
-        <TextInput value={props.directArtist} onChangeText={props.onDirectArtistChange} placeholder="Artista" placeholderTextColor="#7f8c8d" style={styles.smallInput} />
+        <TextInput value={props.directTitle} onChangeText={props.onDirectTitleChange} placeholder={t('download.titlePlaceholder')} placeholderTextColor="#7f8c8d" style={styles.smallInput} />
+        <TextInput value={props.directArtist} onChangeText={props.onDirectArtistChange} placeholder={t('download.artistPlaceholder')} placeholderTextColor="#7f8c8d" style={styles.smallInput} />
       </View>
-      <TextInput value={props.directAlbum} onChangeText={props.onDirectAlbumChange} placeholder="Album" placeholderTextColor="#7f8c8d" style={styles.inputBlock} />
+      <TextInput value={props.directAlbum} onChangeText={props.onDirectAlbumChange} placeholder={t('download.albumPlaceholder')} placeholderTextColor="#7f8c8d" style={styles.inputBlock} />
       <TouchableOpacity style={styles.secondaryButton} onPress={props.onDirectDownload}>
-        <Text style={styles.secondaryButtonText}>Adicionar a biblioteca</Text>
+        <Text style={styles.secondaryButtonText}>{t('download.addToLibrary')}</Text>
       </TouchableOpacity>
 
-      <Text style={styles.sectionTitle}>Arquivos do dispositivo</Text>
+      <Text style={styles.sectionTitle}>{t('download.deviceFiles')}</Text>
       <TouchableOpacity style={styles.secondaryButton} onPress={props.onPickAudioFile}>
-        <Text style={styles.secondaryButtonText}>Escolher arquivo de audio</Text>
+        <Text style={styles.secondaryButtonText}>{t('download.pickAudio')}</Text>
       </TouchableOpacity>
       {props.selectedAudioFile && (
         <View style={styles.importBox}>
@@ -107,13 +109,13 @@ export function DownloadScreen(props: Props) {
       <TextInput
         value={props.importTitle}
         onChangeText={props.onImportTitleChange}
-        placeholder="Titulo da musica"
+        placeholder={t('download.importTitle')}
         placeholderTextColor="#7f8c8d"
         style={styles.inputBlock}
       />
       <View style={styles.twoColumns}>
-        <TextInput value={props.importArtist} onChangeText={props.onImportArtistChange} placeholder="Artista" placeholderTextColor="#7f8c8d" style={styles.smallInput} />
-        <TextInput value={props.importAlbum} onChangeText={props.onImportAlbumChange} placeholder="Album" placeholderTextColor="#7f8c8d" style={styles.smallInput} />
+        <TextInput value={props.importArtist} onChangeText={props.onImportArtistChange} placeholder={t('download.artistPlaceholder')} placeholderTextColor="#7f8c8d" style={styles.smallInput} />
+        <TextInput value={props.importAlbum} onChangeText={props.onImportAlbumChange} placeholder={t('download.albumPlaceholder')} placeholderTextColor="#7f8c8d" style={styles.smallInput} />
       </View>
       <TouchableOpacity
         style={styles.primaryButton}
@@ -121,7 +123,7 @@ export function DownloadScreen(props: Props) {
         disabled={props.busy === 'import-file'}
       >
         <Text style={styles.primaryButtonText}>
-          {props.busy === 'import-file' ? 'Importando...' : 'Importar arquivo'}
+          {props.busy === 'import-file' ? t('download.importing') : t('download.importFile')}
         </Text>
       </TouchableOpacity>
     </ScrollView>

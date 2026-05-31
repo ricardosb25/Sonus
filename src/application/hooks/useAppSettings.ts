@@ -54,8 +54,6 @@ export function useAppSettings({
 
   const toggleSearchEngine = useCallback(
     async (engine: SearchEngineId) => {
-      if (engine === 'youtube') return;
-
       const enabled = settings.searchEngines.includes(engine);
       const nextEngines = enabled
         ? settings.searchEngines.filter((item) => item !== engine)

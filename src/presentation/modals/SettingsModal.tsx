@@ -5,6 +5,7 @@ import { EqualizerPresetId, EqualizerSettings } from '../../domain/equalizer';
 import { AppLanguage, languageOptions } from '../../domain/language';
 import { AppThemeMode, SearchEngineId, searchEngineOptions } from '../../domain/settings';
 import { EqualizerPanel } from '../components/EqualizerPanel';
+import { useI18n } from '../i18n';
 import { useThemedStyles } from '../styles/styles';
 
 type Props = {
@@ -22,9 +23,9 @@ type Props = {
   onClose: () => void;
 };
 
-const themeOptions: Array<{ id: AppThemeMode; label: string; description: string }> = [
-  { id: 'dark', label: 'Escuro', description: 'Interface com fundo escuro para ouvir a noite.' },
-  { id: 'light', label: 'Claro', description: 'Interface clara para ambientes iluminados.' },
+const themeOptions: Array<{ id: AppThemeMode; labelKey: 'settings.dark' | 'settings.light'; hintKey: 'settings.darkHint' | 'settings.lightHint' }> = [
+  { id: 'dark', labelKey: 'settings.dark', hintKey: 'settings.darkHint' },
+  { id: 'light', labelKey: 'settings.light', hintKey: 'settings.lightHint' },
 ];
 
 export function SettingsModal({
@@ -42,20 +43,21 @@ export function SettingsModal({
   onClose,
 }: Props) {
   const styles = useThemedStyles();
+  const t = useI18n();
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
       <SafeAreaView style={styles.modal} edges={['top', 'bottom', 'left', 'right']}>
         <View style={styles.modalHeader}>
-          <Text style={styles.sectionTitle}>Configuracoes</Text>
+          <Text style={styles.sectionTitle}>{t('settings.title')}</Text>
           <TouchableOpacity onPress={onClose}>
-            <Text style={styles.close}>Fechar</Text>
+            <Text style={styles.close}>{t('common.close')}</Text>
           </TouchableOpacity>
         </View>
 
         <ScrollView contentContainerStyle={styles.settingsContent}>
           <View style={styles.settingsRow}>
-            <Text style={styles.settingsLabel}>Tema</Text>
+            <Text style={styles.settingsLabel}>{t('settings.theme')}</Text>
             <View style={styles.segmented}>
               {themeOptions.map((option) => (
                 <TouchableOpacity
@@ -64,18 +66,18 @@ export function SettingsModal({
                   onPress={() => onThemeChange(option.id)}
                 >
                   <Text style={[styles.segmentText, themeMode === option.id && styles.segmentTextActive]}>
-                    {option.label}
+                    {t(option.labelKey)}
                   </Text>
                 </TouchableOpacity>
               ))}
             </View>
             <Text style={styles.settingsHint}>
-              {themeOptions.find((option) => option.id === themeMode)?.description}
+              {t(themeOptions.find((option) => option.id === themeMode)?.hintKey ?? 'settings.darkHint')}
             </Text>
           </View>
 
           <View style={styles.settingsRow}>
-            <Text style={styles.settingsLabel}>Idioma</Text>
+            <Text style={styles.settingsLabel}>{t('settings.language')}</Text>
             <View style={styles.segmented}>
               {languageOptions.map((option) => (
                 <TouchableOpacity
@@ -95,7 +97,7 @@ export function SettingsModal({
           </View>
 
           <View style={styles.settingsRow}>
-            <Text style={styles.settingsLabel}>Motores de busca</Text>
+            <Text style={styles.settingsLabel}>{t('settings.searchEngines')}</Text>
             {searchEngineOptions.map((option) => {
               const active = searchEngines.includes(option.id);
               return (
@@ -114,7 +116,7 @@ export function SettingsModal({
                     <Text style={styles.settingsHint}>{option.description}</Text>
                   </View>
                   <Text style={[styles.batchButtonText, active && styles.actionTextActive]}>
-                    {option.disabled ? 'Indisponivel' : active ? 'Ativo' : 'Inativo'}
+                    {option.disabled ? t('settings.unavailable') : active ? t('settings.active') : t('settings.inactive')}
                   </Text>
                 </TouchableOpacity>
               );

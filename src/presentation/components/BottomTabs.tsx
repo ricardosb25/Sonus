@@ -2,13 +2,14 @@ import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppTab } from '../../domain/models';
+import { useI18n } from '../i18n';
 import { useThemedStyles } from '../styles/styles';
 
-const tabs: Array<{ id: AppTab; label: string }> = [
-  { id: 'download', label: 'Buscar' },
-  { id: 'downloads', label: 'Downloads' },
-  { id: 'library', label: 'Biblioteca' },
-  { id: 'playlists', label: 'Playlists' },
+const tabs: Array<{ id: AppTab; labelKey: Parameters<ReturnType<typeof useI18n>>[0] }> = [
+  { id: 'download', labelKey: 'tabs.search' },
+  { id: 'downloads', labelKey: 'tabs.downloads' },
+  { id: 'library', labelKey: 'tabs.library' },
+  { id: 'playlists', labelKey: 'tabs.playlists' },
 ];
 
 type Props = {
@@ -19,6 +20,7 @@ type Props = {
 export function BottomTabs({ activeTab, onChange }: Props) {
   const styles = useThemedStyles();
   const insets = useSafeAreaInsets();
+  const t = useI18n();
 
   return (
     <View style={[styles.tabs, { paddingBottom: Math.max(10, insets.bottom + 8) }]}>
@@ -29,7 +31,7 @@ export function BottomTabs({ activeTab, onChange }: Props) {
           onPress={() => onChange(tab.id)}
         >
           <Text style={[styles.tabText, activeTab === tab.id && styles.tabTextActive]}>
-            {tab.label}
+            {t(tab.labelKey)}
           </Text>
         </TouchableOpacity>
       ))}

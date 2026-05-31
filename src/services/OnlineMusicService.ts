@@ -126,7 +126,7 @@ async function searchYouTube(query: string): Promise<DownloadCandidate[]> {
         previewUrl: '',
         source: 'YouTube',
         downloadable: false,
-        unavailableReason: 'Configure uma chave da YouTube Data API para pesquisar no YouTube.',
+        unavailableReason: 'Configure EXPO_PUBLIC_YOUTUBE_API_KEY e gere uma nova build para pesquisar no YouTube.',
       },
     ];
   }
@@ -167,7 +167,7 @@ async function searchYouTube(query: string): Promise<DownloadCandidate[]> {
         externalUrl: `https://music.youtube.com/watch?v=${videoId}`,
         source: 'YouTube',
         downloadable: false,
-        unavailableReason: 'Resultado oficial do YouTube: abrir no YouTube Music, sem download direto.',
+        unavailableReason: 'URL oficial do YouTube Music para copiar, sem download direto.',
       };
     });
 }

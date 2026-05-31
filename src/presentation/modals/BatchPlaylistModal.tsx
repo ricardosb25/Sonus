@@ -3,6 +3,7 @@ import { Modal, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Playlist } from '../../domain/models';
 import { EmptyState } from '../components/EmptyState';
+import { useI18n } from '../i18n';
 import { useThemedStyles } from '../styles/styles';
 
 type Props = {
@@ -23,6 +24,7 @@ export function BatchPlaylistModal({
   onCreatePlaylist,
 }: Props) {
   const styles = useThemedStyles();
+  const t = useI18n();
   const [name, setName] = useState('');
 
   const create = () => {
@@ -34,9 +36,9 @@ export function BatchPlaylistModal({
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
       <SafeAreaView style={styles.modal} edges={['top', 'bottom', 'left', 'right']}>
         <View style={styles.modalHeader}>
-          <Text style={styles.sectionTitle}>{selectedCount} musica(s)</Text>
+          <Text style={styles.sectionTitle}>{t('batch.selected', { count: selectedCount })}</Text>
           <TouchableOpacity onPress={onClose}>
-            <Text style={styles.close}>Fechar</Text>
+            <Text style={styles.close}>{t('common.close')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -45,12 +47,12 @@ export function BatchPlaylistModal({
           <TextInput
             value={name}
             onChangeText={setName}
-            placeholder="Nome da playlist"
+            placeholder={t('playlists.namePlaceholder')}
             placeholderTextColor="#7f8c8d"
             style={styles.input}
           />
           <TouchableOpacity style={styles.primaryButton} onPress={create}>
-            <Text style={styles.primaryButtonText}>Criar</Text>
+            <Text style={styles.primaryButtonText}>{t('common.create')}</Text>
           </TouchableOpacity>
         </View>
 

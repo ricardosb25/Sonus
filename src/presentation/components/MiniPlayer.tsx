@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, TouchableOpacity } from 'react-native';
 import { Track } from '../../domain/models';
+import { useI18n } from '../i18n';
 import { useThemedStyles } from '../styles/styles';
 
 export function MiniPlayer({
@@ -15,6 +16,7 @@ export function MiniPlayer({
   onTogglePlayback: () => void;
 }) {
   const styles = useThemedStyles();
+  const t = useI18n();
 
   if (!track) return null;
 
@@ -25,7 +27,7 @@ export function MiniPlayer({
         onPress={onTogglePlayback}
         style={styles.miniControl}
       >
-        <Text style={styles.miniControlText}>{playing ? 'Pausar' : 'Tocar'}</Text>
+        <Text style={styles.miniControlText}>{playing ? t('common.pause') : t('common.play')}</Text>
       </TouchableOpacity>
     </TouchableOpacity>
   );

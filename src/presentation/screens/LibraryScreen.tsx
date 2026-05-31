@@ -4,13 +4,14 @@ import { LibraryFilter, Track } from '../../domain/models';
 import { BatchActionsBar } from '../components/BatchActionsBar';
 import { EmptyState } from '../components/EmptyState';
 import { TrackRow } from '../components/TrackRow';
+import { useI18n } from '../i18n';
 import { useThemedStyles } from '../styles/styles';
 
-const filters: Array<{ id: LibraryFilter; label: string }> = [
-  { id: 'all', label: 'Todas' },
-  { id: 'favorites', label: 'Favoritas' },
-  { id: 'artists', label: 'Artistas' },
-  { id: 'albums', label: 'Albuns' },
+const filters: Array<{ id: LibraryFilter; labelKey: 'library.all' | 'library.favorites' | 'library.artists' | 'library.albums' }> = [
+  { id: 'all', labelKey: 'library.all' },
+  { id: 'favorites', labelKey: 'library.favorites' },
+  { id: 'artists', labelKey: 'library.artists' },
+  { id: 'albums', labelKey: 'library.albums' },
 ];
 
 type Props = {
@@ -34,6 +35,7 @@ type Props = {
 
 export function LibraryScreen(props: Props) {
   const styles = useThemedStyles();
+  const t = useI18n();
   const grouped = props.filter === 'artists' || props.filter === 'albums';
 
   return (
@@ -46,7 +48,7 @@ export function LibraryScreen(props: Props) {
             onPress={() => props.onFilterChange(item.id)}
           >
             <Text style={[styles.segmentText, props.filter === item.id && styles.segmentTextActive]}>
-              {item.label}
+              {t(item.labelKey)}
             </Text>
           </TouchableOpacity>
         ))}
@@ -83,7 +85,7 @@ export function LibraryScreen(props: Props) {
               ))}
             </View>
           )}
-          ListEmptyComponent={<EmptyState text="Sua biblioteca offline ainda esta vazia." />}
+          ListEmptyComponent={<EmptyState text={t('library.empty')} />}
         />
       ) : (
         <FlatList
@@ -102,7 +104,7 @@ export function LibraryScreen(props: Props) {
               onToggleSelection={() => props.onToggleSelection(item)}
             />
           )}
-          ListEmptyComponent={<EmptyState text="Sua biblioteca offline ainda esta vazia." />}
+          ListEmptyComponent={<EmptyState text={t('library.empty')} />}
         />
       )}
     </View>

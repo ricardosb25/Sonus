@@ -2,6 +2,7 @@ import Slider from '@react-native-community/slider';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { EqualizerPresetId, EqualizerSettings, equalizerPresets } from '../../domain/equalizer';
+import { useI18n } from '../i18n';
 import { useThemedStyles } from '../styles/styles';
 
 type Props = {
@@ -20,15 +21,16 @@ export function EqualizerPanel({
   onBandGainChange,
 }: Props) {
   const styles = useThemedStyles();
+  const t = useI18n();
 
   return (
     <View style={styles.equalizerBox}>
       <View style={styles.equalizerHeader}>
         <View>
-          <Text style={styles.settingsLabel}>Equalizador</Text>
+          <Text style={styles.settingsLabel}>{t('equalizer.title')}</Text>
           {!compact && (
             <Text style={styles.settingsHint}>
-              Ajuste as frequencias da reproducao conforme seu fone ou caixa.
+              {t('equalizer.hint')}
             </Text>
           )}
         </View>
@@ -37,7 +39,7 @@ export function EqualizerPanel({
           onPress={() => onEnabledChange(!equalizer.enabled)}
         >
           <Text style={[styles.modeText, equalizer.enabled && styles.modeTextActive]}>
-            {equalizer.enabled ? 'Ligado' : 'Desligado'}
+            {equalizer.enabled ? t('equalizer.on') : t('equalizer.off')}
           </Text>
         </TouchableOpacity>
       </View>
