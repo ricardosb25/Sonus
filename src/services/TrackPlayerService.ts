@@ -5,7 +5,14 @@ import TrackPlayer, {
   RepeatMode,
 } from 'react-native-track-player';
 
+let setupPromise: Promise<boolean> | null = null;
+
 export const setupPlayer = async () => {
+  setupPromise ??= setupPlayerOnce();
+  return setupPromise;
+};
+
+async function setupPlayerOnce() {
   let isSetup = false;
   try {
     await TrackPlayer.getActiveTrack();
@@ -30,7 +37,7 @@ export const setupPlayer = async () => {
   } finally {
     return isSetup;
   }
-};
+}
 
 export const playbackService = async function() {
   TrackPlayer.addEventListener(Event.RemotePlay, () => TrackPlayer.play());

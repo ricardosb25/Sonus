@@ -1,5 +1,6 @@
 import TrackPlayer, { RepeatMode } from 'react-native-track-player';
 import { PlaybackMode, Track } from '../../domain/models';
+import { setupPlayer } from '../../services/TrackPlayerService';
 
 export interface PlaybackService {
   playQueue(tracks: Track[], startId?: string): Promise<void>;
@@ -14,6 +15,7 @@ export interface PlaybackService {
 export const trackPlaybackService: PlaybackService = {
   async playQueue(tracks, startId) {
     if (!tracks.length) return;
+    await ensurePlayerReady();
 
     const startIndex = Math.max(0, tracks.findIndex((track) => track.id === startId));
 
@@ -31,12 +33,22 @@ export const trackPlaybackService: PlaybackService = {
     await TrackPlayer.skip(startIndex);
     await TrackPlayer.play();
   },
-  play: () => TrackPlayer.play(),
-  pause: () => TrackPlayer.pause(),
+  async play() {
+    await ensurePlayerReady();
+    await TrackPlayer.play();
+  },
+  async pause() {
+    await ensurePlayerReady();
+    await TrackPlayer.pause();
+  },
   next: safeSkipToNext,
   previous: safeSkipToPrevious,
-  seekTo: (position) => TrackPlayer.seekTo(position),
+  async seekTo(position) {
+    await ensurePlayerReady();
+    await TrackPlayer.seekTo(position);
+  },
   async setPlaybackMode(mode) {
+    await ensurePlayerReady();
     if (mode === 'repeat-one') {
       await TrackPlayer.setRepeatMode(RepeatMode.Track);
       return;
@@ -50,7 +62,15 @@ export const trackPlaybackService: PlaybackService = {
   },
 };
 
+async function ensurePlayerReady() {
+  const ready = await setupPlayer();
+  if (!ready) {
+    throw new Error('Nao foi possivel iniciar o player.');
+  }
+}
+
 async function safeSkipToNext() {
+  await ensurePlayerReady();
   try {
     await TrackPlayer.skipToNext();
   } catch {
@@ -60,6 +80,7 @@ async function safeSkipToNext() {
 }
 
 async function safeSkipToPrevious() {
+  await ensurePlayerReady();
   try {
     await TrackPlayer.skipToPrevious();
   } catch {
@@ -68,6 +89,7 @@ async function safeSkipToPrevious() {
 }
 
 async function shuffleCurrentQueue() {
+  await ensurePlayerReady();
   const queue = await TrackPlayer.getQueue();
   const activeTrack = await TrackPlayer.getActiveTrack();
   if (!queue.length || !activeTrack) return;

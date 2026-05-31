@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert } from 'react-native';
-import { setupPlayer } from '../../services/TrackPlayerService';
 import { fileSystemLibraryRepository, LibraryRepository } from '../../data/repositories/LibraryRepository';
 import { onlineMusicDiscoveryService, MusicDiscoveryService } from '../services/MusicDiscoveryService';
 import { trackPlaybackService, PlaybackService } from '../services/TrackPlaybackService';
@@ -68,9 +67,8 @@ export function useSonusLibrary({
 
   useEffect(() => {
     async function boot() {
-      const playerReady = await setupPlayer();
       setLibrary(await libraryRepository.load());
-      setReady(playerReady);
+      setReady(true);
     }
 
     boot();
