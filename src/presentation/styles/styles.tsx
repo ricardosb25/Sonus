@@ -1,0 +1,173 @@
+import React, { createContext, PropsWithChildren, useContext, useMemo } from 'react';
+import { StyleSheet } from 'react-native';
+import { AppThemeMode } from '../../domain/settings';
+
+const palettes = {
+  dark: {
+    background: '#071314',
+    surface: '#102225',
+    surfaceRaised: '#18383c',
+    border: '#1c383b',
+    borderStrong: '#254145',
+    text: '#f8fafc',
+    textMuted: '#8ea4a5',
+    textSoft: '#a6bfc0',
+    accent: '#5eead4',
+    accentText: '#062224',
+    danger: '#ff8f8f',
+    dangerText: '#ffc1c1',
+    activeSurface: '#e9fffb',
+    scrim: 'rgba(0,0,0,0.58)',
+  },
+  light: {
+    background: '#f5f7f4',
+    surface: '#ffffff',
+    surfaceRaised: '#e7f2ef',
+    border: '#d3dfdc',
+    borderStrong: '#b9cbc7',
+    text: '#102225',
+    textMuted: '#647875',
+    textSoft: '#415a57',
+    accent: '#0f766e',
+    accentText: '#f8fafc',
+    danger: '#b4232d',
+    dangerText: '#8f1d25',
+    activeSurface: '#d9f5ef',
+    scrim: 'rgba(0,0,0,0.28)',
+  },
+} as const;
+
+export type AppStyles = ReturnType<typeof createThemedStyles>;
+
+const StylesContext = createContext<AppStyles | null>(null);
+
+export function ThemeProvider({ themeMode, children }: PropsWithChildren<{ themeMode: AppThemeMode }>) {
+  const styles = useMemo(() => createThemedStyles(themeMode), [themeMode]);
+
+  return <StylesContext.Provider value={styles}>{children}</StylesContext.Provider>;
+}
+
+export function useThemedStyles() {
+  const styles = useContext(StylesContext);
+  if (!styles) {
+    throw new Error('useThemedStyles must be used inside ThemeProvider');
+  }
+  return styles;
+}
+
+function createThemedStyles(themeMode: AppThemeMode) {
+  const palette = palettes[themeMode];
+
+  return StyleSheet.create({
+    root: { flex: 1, backgroundColor: palette.background },
+    loading: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: palette.background },
+    header: { paddingHorizontal: 20, paddingTop: 10, paddingBottom: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+    logo: { color: palette.text, fontSize: 32, fontWeight: '800', letterSpacing: 0 },
+    brandLogo: { width: 116, height: 72 },
+    subtitle: { color: palette.textMuted, marginTop: 2 },
+    headerActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+    playerButton: { borderColor: palette.borderStrong, borderWidth: 1, borderRadius: 8, paddingHorizontal: 14, paddingVertical: 10 },
+    playerButtonText: { color: palette.accent, fontWeight: '700' },
+    content: { flex: 1, paddingHorizontal: 16, paddingBottom: 16 },
+    sectionTitle: { color: palette.text, fontSize: 20, fontWeight: '800', marginBottom: 12 },
+    searchBar: { flexDirection: 'row', gap: 10, marginBottom: 14 },
+    input: { flex: 1, minHeight: 48, borderRadius: 8, paddingHorizontal: 14, color: palette.text, backgroundColor: palette.surface, borderColor: palette.border, borderWidth: 1 },
+    inputBlock: { minHeight: 48, borderRadius: 8, paddingHorizontal: 14, color: palette.text, backgroundColor: palette.surface, borderColor: palette.border, borderWidth: 1, marginBottom: 10 },
+    importBox: { borderRadius: 8, paddingHorizontal: 14, paddingVertical: 12, backgroundColor: palette.surface, borderColor: palette.border, borderWidth: 1, marginTop: 10, marginBottom: 10 },
+    smallInput: { flex: 1, minHeight: 48, borderRadius: 8, paddingHorizontal: 14, color: palette.text, backgroundColor: palette.surface, borderColor: palette.border, borderWidth: 1 },
+    twoColumns: { flexDirection: 'row', gap: 10, marginBottom: 10 },
+    primaryButton: { minHeight: 48, borderRadius: 8, backgroundColor: palette.accent, paddingHorizontal: 16, alignItems: 'center', justifyContent: 'center' },
+    primaryButtonText: { color: palette.accentText, fontWeight: '900' },
+    secondaryButton: { minHeight: 48, borderRadius: 8, borderColor: palette.accent, borderWidth: 1, paddingHorizontal: 16, alignItems: 'center', justifyContent: 'center' },
+    secondaryButtonText: { color: palette.accent, fontWeight: '800' },
+    dangerButton: { minHeight: 48, borderRadius: 8, borderColor: palette.danger, borderWidth: 1, paddingHorizontal: 16, alignItems: 'center', justifyContent: 'center' },
+    dangerText: { color: palette.dangerText, fontWeight: '800' },
+    row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, borderBottomColor: palette.border, borderBottomWidth: 1 },
+    rowSelected: { backgroundColor: palette.activeSurface, borderRadius: 8, paddingHorizontal: 8 },
+    rowTap: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 12 },
+    rowInfo: { flex: 1, minWidth: 0 },
+    cover: { width: 56, height: 56, borderRadius: 8, backgroundColor: palette.surface },
+    coverFallback: { width: 56, height: 56, borderRadius: 8, backgroundColor: palette.surfaceRaised, alignItems: 'center', justifyContent: 'center' },
+    coverText: { color: palette.accent, fontSize: 24, fontWeight: '900' },
+    trackTitle: { color: palette.text, fontSize: 15, fontWeight: '800' },
+    trackMeta: { color: palette.textSoft, marginTop: 3 },
+    muted: { color: palette.textMuted, fontSize: 12, marginTop: 3 },
+    iconButton: { borderRadius: 8, paddingHorizontal: 12, paddingVertical: 9, backgroundColor: palette.surfaceRaised },
+    iconButtonText: { color: palette.accent, fontWeight: '800' },
+    actions: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-end', gap: 6, maxWidth: 160 },
+    action: { borderRadius: 8, paddingHorizontal: 8, paddingVertical: 6, backgroundColor: palette.surface },
+    actionActive: { backgroundColor: palette.accent },
+    actionDanger: { borderColor: palette.danger, borderWidth: 1 },
+    actionText: { color: palette.textSoft, fontSize: 11, fontWeight: '800' },
+    actionTextActive: { color: palette.accentText },
+    checkBox: { width: 28, height: 28, borderRadius: 8, borderWidth: 1, borderColor: palette.borderStrong, alignItems: 'center', justifyContent: 'center' },
+    checkBoxActive: { backgroundColor: palette.accent, borderColor: palette.accent },
+    checkBoxText: { color: palette.textMuted, fontSize: 10, fontWeight: '900' },
+    checkBoxTextActive: { color: palette.accentText },
+    batchBar: { borderRadius: 8, borderWidth: 1, borderColor: palette.border, backgroundColor: palette.surface, padding: 10, marginBottom: 12 },
+    batchTitle: { color: palette.text, fontWeight: '900', marginBottom: 8 },
+    batchActions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+    batchButton: { borderRadius: 8, borderWidth: 1, borderColor: palette.borderStrong, paddingHorizontal: 10, paddingVertical: 8 },
+    batchButtonText: { color: palette.accent, fontSize: 12, fontWeight: '900' },
+    batchDanger: { borderColor: palette.danger },
+    batchDangerText: { color: palette.dangerText, fontSize: 12, fontWeight: '900' },
+    downloadCard: { borderRadius: 8, borderWidth: 1, borderColor: palette.border, backgroundColor: palette.surface, padding: 12, marginBottom: 10 },
+    progressTrack: { height: 8, borderRadius: 8, overflow: 'hidden', backgroundColor: palette.surfaceRaised, marginTop: 12 },
+    progressFill: { height: '100%', borderRadius: 8, backgroundColor: palette.accent },
+    downloadFooter: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginTop: 10 },
+    downloadActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+    segmented: { flexDirection: 'row', backgroundColor: palette.surface, borderRadius: 8, padding: 4, marginBottom: 12, borderColor: palette.border, borderWidth: 1 },
+    segment: { flex: 1, alignItems: 'center', paddingVertical: 10, borderRadius: 6 },
+    segmentActive: { backgroundColor: palette.activeSurface },
+    segmentText: { color: palette.textMuted, fontSize: 12, fontWeight: '800' },
+    segmentTextActive: { color: palette.accentText },
+    group: { marginBottom: 18 },
+    groupTitle: { color: palette.accent, fontSize: 16, fontWeight: '900', marginBottom: 4 },
+    empty: { color: palette.textMuted, textAlign: 'center', paddingVertical: 32 },
+    playlistRow: { minHeight: 58, borderBottomColor: palette.border, borderBottomWidth: 1, justifyContent: 'center' },
+    playlistName: { color: palette.text, fontSize: 16, fontWeight: '800' },
+    playlistTools: { flexDirection: 'row', gap: 10, marginBottom: 12, paddingHorizontal: 16 },
+    tabs: { flexDirection: 'row', gap: 8, paddingHorizontal: 12, paddingVertical: 10, backgroundColor: palette.background, borderTopColor: palette.border, borderTopWidth: 1 },
+    tabButton: { flex: 1, borderRadius: 8, paddingVertical: 11, alignItems: 'center' },
+    tabActive: { backgroundColor: palette.accent },
+    tabText: { color: palette.textMuted, fontWeight: '800' },
+    tabTextActive: { color: palette.accentText },
+    miniPlayer: { minHeight: 54, marginHorizontal: 12, marginBottom: 8, borderRadius: 8, backgroundColor: palette.surface, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, borderColor: palette.border, borderWidth: 1 },
+    miniTitle: { color: palette.text, flex: 1, fontWeight: '800' },
+    miniControl: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, backgroundColor: palette.accent },
+    miniControlText: { color: palette.accentText, fontWeight: '900' },
+    modal: { flex: 1, backgroundColor: palette.background, padding: 16 },
+    modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, gap: 12 },
+    modalTitleInput: { flex: 1, color: palette.text, fontSize: 22, fontWeight: '900', borderBottomColor: palette.borderStrong, borderBottomWidth: 1, paddingVertical: 8 },
+    close: { color: palette.accent, fontWeight: '900' },
+    lyrics: { color: palette.textSoft, fontSize: 16, lineHeight: 25 },
+    scrim: { flex: 1, backgroundColor: palette.scrim, justifyContent: 'flex-end' },
+    sheet: { backgroundColor: palette.background, padding: 18, borderTopLeftRadius: 8, borderTopRightRadius: 8, maxHeight: '70%' },
+    player: { flex: 1, backgroundColor: palette.background, padding: 18 },
+    playerBody: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+    nowTitle: { color: palette.text, fontSize: 26, fontWeight: '900', textAlign: 'center', marginTop: 24 },
+    nowArtist: { color: palette.textMuted, fontSize: 16, marginTop: 8 },
+    slider: { width: '100%', height: 46, marginTop: 28 },
+    timeRow: { width: '100%', flexDirection: 'row', justifyContent: 'space-between' },
+    playerControls: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 22 },
+    playbackModes: { width: '100%', flexDirection: 'row', gap: 8, marginTop: 18 },
+    modeButton: { flex: 1, minHeight: 42, borderRadius: 8, borderWidth: 1, borderColor: palette.borderStrong, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 },
+    modeButtonActive: { backgroundColor: palette.accent, borderColor: palette.accent },
+    modeText: { color: palette.accent, fontSize: 12, fontWeight: '900' },
+    modeTextActive: { color: palette.accentText },
+    roundButton: { minWidth: 86, borderRadius: 8, paddingVertical: 12, alignItems: 'center', borderWidth: 1, borderColor: palette.borderStrong },
+    roundText: { color: palette.accent, fontWeight: '800' },
+    playButton: { minWidth: 100, borderRadius: 8, paddingVertical: 14, alignItems: 'center', backgroundColor: palette.accent },
+    playText: { color: palette.accentText, fontWeight: '900' },
+    settingsRow: { paddingVertical: 14, borderBottomColor: palette.border, borderBottomWidth: 1 },
+    settingsLabel: { color: palette.text, fontSize: 16, fontWeight: '800', marginBottom: 10 },
+    settingsHint: { color: palette.textMuted, fontSize: 13, lineHeight: 19 },
+    equalizerBox: { width: '100%', borderRadius: 8, borderWidth: 1, borderColor: palette.border, backgroundColor: palette.surface, padding: 12, marginTop: 18 },
+    equalizerHeader: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 },
+    equalizerPresets: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 12, marginBottom: 8 },
+    presetButton: { borderRadius: 8, borderWidth: 1, borderColor: palette.borderStrong, paddingHorizontal: 10, paddingVertical: 8 },
+    equalizerBand: { marginTop: 8 },
+    equalizerBandLabelRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+    equalizerSlider: { width: '100%', height: 34 },
+  });
+}
