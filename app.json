@@ -6,7 +6,6 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
-    "newArchEnabled": false,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -19,7 +18,6 @@
     "android": {
       "package": "com.ricardosb.sonus",
       "versionCode": 1,
-      "minSdkVersion": 24,
       "adaptiveIcon": {
         "backgroundColor": "#121212",
         "foregroundImage": "./assets/android-icon-foreground.png"
@@ -37,7 +35,6 @@
         "expo-build-properties",
         {
           "android": {
-            "kotlinVersion": "1.8.10",
             "minSdkVersion": 24,
             "packagingOptions": {
               "pickFirst": [
