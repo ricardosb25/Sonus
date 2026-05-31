@@ -17,8 +17,37 @@ type AudiusTrack = {
   };
 };
 
+type InternetArchiveSearchDoc = {
+  identifier?: string;
+  title?: string;
+  creator?: string | string[];
+  collection?: string | string[];
+  downloads?: number;
+};
+
+type InternetArchiveSearchResponse = {
+  response?: {
+    docs?: InternetArchiveSearchDoc[];
+  };
+};
+
+type InternetArchiveMetadata = {
+  metadata?: {
+    title?: string;
+    creator?: string | string[];
+    collection?: string | string[];
+  };
+  files?: Array<{
+    name?: string;
+    format?: string;
+    length?: string;
+    size?: string;
+  }>;
+};
+
 const providers: SearchProvider[] = [
   { name: 'Audius', search: searchAudius },
+  { name: 'Internet Archive', search: searchInternetArchive },
 ];
 
 export async function searchMusic(query: string): Promise<DownloadCandidate[]> {
@@ -70,6 +99,90 @@ async function getAudiusHost() {
   }
 
   return 'https://discoveryprovider.audius.co';
+}
+
+async function searchInternetArchive(query: string): Promise<DownloadCandidate[]> {
+  const search = await fetch(
+    'https://archive.org/advancedsearch.php?' +
+      [
+        `q=${encodeURIComponent(`(${query}) AND mediatype:audio`)}`,
+        'fl[]=identifier',
+        'fl[]=title',
+        'fl[]=creator',
+        'fl[]=collection',
+        'fl[]=downloads',
+        'rows=12',
+        'page=1',
+        'sort[]=downloads desc',
+        'output=json',
+      ].join('&'),
+  );
+  const data = (await search.json()) as InternetArchiveSearchResponse;
+  const docs = data.response?.docs ?? [];
+
+  const candidates = await Promise.all(
+    docs
+      .filter((doc) => doc.identifier)
+      .slice(0, 8)
+      .map((doc) => internetArchiveDocToCandidate(doc)),
+  );
+
+  return candidates.filter((candidate): candidate is DownloadCandidate => Boolean(candidate));
+}
+
+async function internetArchiveDocToCandidate(
+  doc: InternetArchiveSearchDoc,
+): Promise<DownloadCandidate | null> {
+  const identifier = doc.identifier;
+  if (!identifier) return null;
+
+  try {
+    const response = await fetch(`https://archive.org/metadata/${encodeURIComponent(identifier)}`);
+    const metadata = (await response.json()) as InternetArchiveMetadata;
+    const audioFile = metadata.files?.find(isPlayableArchiveAudio);
+    if (!audioFile?.name) return null;
+
+    const title = firstString(metadata.metadata?.title ?? doc.title) || audioFile.name;
+    const artist = firstString(metadata.metadata?.creator ?? doc.creator) || 'Internet Archive';
+    const album = firstString(metadata.metadata?.collection ?? doc.collection) || 'Internet Archive';
+    const duration = Number(audioFile.length);
+
+    return {
+      id: `archive-${identifier}-${audioFile.name}`,
+      title,
+      artist,
+      album,
+      artwork: `https://archive.org/services/img/${encodeURIComponent(identifier)}`,
+      previewUrl: `https://archive.org/download/${encodeURIComponent(identifier)}/${encodeArchivePath(audioFile.name)}`,
+      duration: Number.isFinite(duration) ? Math.round(duration) : undefined,
+      source: 'Internet Archive',
+    };
+  } catch {
+    return null;
+  }
+}
+
+function isPlayableArchiveAudio(file: { name?: string; format?: string }) {
+  const name = file.name?.toLowerCase() ?? '';
+  const format = file.format?.toLowerCase() ?? '';
+
+  return (
+    name.endsWith('.mp3') ||
+    name.endsWith('.m4a') ||
+    name.endsWith('.ogg') ||
+    name.endsWith('.flac') ||
+    format.includes('mp3') ||
+    format.includes('ogg') ||
+    format.includes('flac')
+  );
+}
+
+function firstString(value?: string | string[]) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function encodeArchivePath(path: string) {
+  return path.split('/').map(encodeURIComponent).join('/');
 }
 
 function dedupeCandidates(candidates: DownloadCandidate[]) {

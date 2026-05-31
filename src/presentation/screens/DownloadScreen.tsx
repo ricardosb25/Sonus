@@ -38,7 +38,7 @@ export function DownloadScreen(props: Props) {
   const styles = useThemedStyles();
 
   return (
-    <ScrollView contentContainerStyle={styles.content}>
+    <ScrollView contentContainerStyle={styles.scrollContent}>
       <Text style={styles.sectionTitle}>Baixar musicas</Text>
       <View style={styles.searchBar}>
         <TextInput

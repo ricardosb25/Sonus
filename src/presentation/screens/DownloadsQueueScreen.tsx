@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { DownloadQueueItem } from '../../domain/models';
 import { formatDuration } from '../../shared/formatDuration';
@@ -13,6 +13,8 @@ type Props = {
   onRemove: (item: DownloadQueueItem) => void;
 };
 
+type DownloadTab = 'active' | 'completed';
+
 const statusLabel: Record<DownloadQueueItem['status'], string> = {
   queued: 'Na fila',
   downloading: 'Baixando',
@@ -23,15 +25,46 @@ const statusLabel: Record<DownloadQueueItem['status'], string> = {
 
 export function DownloadsQueueScreen({ downloads, onPause, onResume, onRemove }: Props) {
   const styles = useThemedStyles();
+  const [activeTab, setActiveTab] = useState<DownloadTab>('active');
+  const activeDownloads = useMemo(
+    () => downloads.filter((item) => item.status !== 'completed'),
+    [downloads],
+  );
+  const completedDownloads = useMemo(
+    () => downloads.filter((item) => item.status === 'completed'),
+    [downloads],
+  );
+  const visibleDownloads = activeTab === 'active' ? activeDownloads : completedDownloads;
+  const emptyText =
+    activeTab === 'active'
+      ? 'Nenhum download em progresso. Busque uma musica e toque em Baixar para acompanhar por aqui.'
+      : 'Nenhum download concluido ainda.';
 
   return (
-    <ScrollView contentContainerStyle={styles.content}>
+    <ScrollView contentContainerStyle={styles.scrollContent}>
       <Text style={styles.sectionTitle}>Downloads</Text>
-      {!downloads.length && (
-        <EmptyState text="Nenhum download na fila. Busque uma musica e toque em Baixar para acompanhar por aqui." />
-      )}
+      <View style={styles.segmented}>
+        <TouchableOpacity
+          style={[styles.segment, activeTab === 'active' && styles.segmentActive]}
+          onPress={() => setActiveTab('active')}
+        >
+          <Text style={[styles.segmentText, activeTab === 'active' && styles.segmentTextActive]}>
+            Em progresso ({activeDownloads.length})
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.segment, activeTab === 'completed' && styles.segmentActive]}
+          onPress={() => setActiveTab('completed')}
+        >
+          <Text style={[styles.segmentText, activeTab === 'completed' && styles.segmentTextActive]}>
+            Concluidos ({completedDownloads.length})
+          </Text>
+        </TouchableOpacity>
+      </View>
 
-      {downloads.map((item) => {
+      {!visibleDownloads.length && <EmptyState text={emptyText} />}
+
+      {visibleDownloads.map((item) => {
         const canPause = item.status === 'queued' || item.status === 'downloading';
         const canResume = item.status === 'paused' || item.status === 'error';
         const progress = Math.round(item.progress * 100);

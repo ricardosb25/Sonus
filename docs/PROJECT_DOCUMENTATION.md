@@ -16,7 +16,7 @@ Sonus e um aplicativo mobile para ouvir musica offline. O usuario pode buscar pr
 
 ### Busca e download
 
-- Usa Audius para buscar musicas completas.
+- Usa Audius e Internet Archive para buscar musicas completas.
 - Executa buscas em paralelo.
 - Remove duplicados por titulo, artista e album.
 - Exibe a fonte de cada resultado.
