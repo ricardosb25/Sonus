@@ -47,7 +47,6 @@ export const searchEngineOptions: Array<{
   {
     id: 'youtube',
     label: 'YouTube',
-    description: 'Busca/extracao de audio nao esta disponivel no Sonus por limitacoes do fluxo oficial.',
-    disabled: true,
+    description: 'Busca oficial via YouTube Data API. Mostra resultados e links, sem download direto.',
   },
 ];

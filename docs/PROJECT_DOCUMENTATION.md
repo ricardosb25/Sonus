@@ -21,7 +21,8 @@ Sonus e um aplicativo mobile para ouvir musica offline. O usuario pode buscar pr
   - Internet Archive.
   - iTunes Preview.
   - Deezer Preview.
-- YouTube aparece como indisponivel para download, sem extracao de audio.
+- YouTube pode ser ativado como descoberta oficial via YouTube Data API.
+- Resultados do YouTube mostram uma URL oficial selecionavel e nao entram na fila de download.
 - Executa buscas em paralelo.
 - Remove duplicados por titulo, artista e album.
 - Exibe a fonte de cada resultado.
@@ -115,7 +116,8 @@ interface AppSettings {
 ## Limites atuais
 
 - Equalizador ainda nao aplica DSP real ao audio. A UI e a persistencia estao preparadas para receber um modulo nativo.
-- YouTube nao faz extracao/download de audio no Sonus. Para catalogo completo, e preciso integrar uma API licenciada ou fonte autorizada.
+- YouTube nao faz extracao/download de audio no Sonus; usa apenas busca oficial com `EXPO_PUBLIC_YOUTUBE_API_KEY`.
+- Para baixar catalogo mainstream completo dentro do app, seria preciso uma API/licenca comercial que autorize download offline.
 - Widgets Android dependem de prebuild/build nativo; nao aparecem apenas no Expo Go.
 
 ## Proximos passos recomendados

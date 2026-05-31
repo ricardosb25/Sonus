@@ -6,7 +6,7 @@ Ele foi reconstruido com Expo + React Native, armazenamento local, player nativo
 
 ## Destaques
 
-- Busca online configuravel: Audius, Internet Archive, iTunes Preview e Deezer Preview.
+- Busca online configuravel: Audius, Internet Archive, iTunes Preview, Deezer Preview e YouTube como descoberta oficial.
 - Download por resultado de busca ou URL direta de audio, com fila para acompanhar, pausar, retomar e excluir downloads.
 - Importacao de arquivos de audio do dispositivo.
 - Biblioteca offline persistida no armazenamento interno do app.
@@ -92,8 +92,25 @@ npx expo config --type public
 node --check plugins/withSonusAndroidWidgets.js
 ```
 
+## YouTube
+
+O YouTube pode ser ativado em `Configuracoes > Motores de busca`, mas ele funciona como descoberta/link oficial, sem download direto de audio. Os resultados exibem uma URL selecionavel para copiar e colar no navegador.
+
+Para pesquisar no YouTube, crie uma chave da YouTube Data API v3 no Google Cloud e rode o app com:
+
+```bash
+EXPO_PUBLIC_YOUTUBE_API_KEY=sua_chave npm start
+```
+
+No PowerShell:
+
+```powershell
+$env:EXPO_PUBLIC_YOUTUBE_API_KEY="sua_chave"
+npm start
+```
+
 ## Observacoes
 
-- A versao atual evita extracao/download nao oficial do YouTube. Para musicas completas, use fontes com download/stream permitido ou URL direta autorizada.
+- A versao atual evita extracao/download nao oficial do YouTube. Resultados do YouTube mostram a URL oficial para o usuario copiar.
 - A interface e persistencia do equalizador estao prontas, mas DSP real exige um modulo nativo de audio effect plugado por plataforma.
 - Widgets Android sao gerados no `expo prebuild` pelo plugin `plugins/withSonusAndroidWidgets.js`.

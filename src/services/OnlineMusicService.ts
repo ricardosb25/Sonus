@@ -1,12 +1,13 @@
 import { DownloadCandidate } from '../types';
 import { SearchEngineId } from '../domain/settings';
 
+declare const process: { env?: Record<string, string | undefined> };
+
 type SearchProvider = {
-  id: ActiveSearchEngineId;
+  id: SearchEngineId;
   name: string;
   search(query: string): Promise<DownloadCandidate[]>;
 };
-type ActiveSearchEngineId = Exclude<SearchEngineId, 'youtube'>;
 
 type ITunesResult = {
   trackId?: number;
@@ -67,11 +68,29 @@ type InternetArchiveMetadata = {
   }>;
 };
 
+type YouTubeSearchResult = {
+  id?: { videoId?: string };
+  snippet?: {
+    title?: string;
+    channelTitle?: string;
+    thumbnails?: {
+      default?: { url?: string };
+      medium?: { url?: string };
+      high?: { url?: string };
+    };
+  };
+};
+
+type YouTubeSearchResponse = {
+  items?: YouTubeSearchResult[];
+};
+
 const providers: SearchProvider[] = [
   { id: 'audius', name: 'Audius', search: searchAudius },
   { id: 'internetArchive', name: 'Internet Archive', search: searchInternetArchive },
   { id: 'itunes', name: 'iTunes Preview', search: searchITunes },
   { id: 'deezer', name: 'Deezer Preview', search: searchDeezer },
+  { id: 'youtube', name: 'YouTube', search: searchYouTube },
 ];
 
 export async function searchMusic(
@@ -80,9 +99,7 @@ export async function searchMusic(
 ): Promise<DownloadCandidate[]> {
   const term = query.trim();
   if (!term) return [];
-  const enabled = new Set(
-    enabledEngines.filter((engine): engine is ActiveSearchEngineId => engine !== 'youtube'),
-  );
+  const enabled = new Set(enabledEngines);
   const activeProviders = providers.filter((provider) => enabled.has(provider.id));
   if (!activeProviders.length) return [];
 
@@ -95,6 +112,64 @@ export async function searchMusic(
   );
 
   return dedupeCandidates(candidates).slice(0, 36);
+}
+
+async function searchYouTube(query: string): Promise<DownloadCandidate[]> {
+  const apiKey = process.env?.EXPO_PUBLIC_YOUTUBE_API_KEY;
+  if (!apiKey) {
+    return [
+      {
+        id: 'youtube-missing-api-key',
+        title: 'YouTube nao configurado',
+        artist: 'Defina EXPO_PUBLIC_YOUTUBE_API_KEY',
+        album: 'Configuracoes',
+        previewUrl: '',
+        source: 'YouTube',
+        downloadable: false,
+        unavailableReason: 'Configure uma chave da YouTube Data API para pesquisar no YouTube.',
+      },
+    ];
+  }
+
+  const response = await fetch(
+    'https://www.googleapis.com/youtube/v3/search?' +
+      [
+        'part=snippet',
+        'type=video',
+        'videoCategoryId=10',
+        'maxResults=12',
+        `q=${encodeURIComponent(query)}`,
+        `key=${encodeURIComponent(apiKey)}`,
+      ].join('&'),
+  );
+
+  if (!response.ok) {
+    throw new Error('YouTube indisponivel.');
+  }
+
+  const data = (await response.json()) as YouTubeSearchResponse;
+  const results = Array.isArray(data.items) ? data.items : [];
+
+  return results
+    .filter((item) => item.id?.videoId && item.snippet?.title)
+    .map((item) => {
+      const videoId = item.id?.videoId ?? '';
+      return {
+        id: `youtube-${videoId}`,
+        title: cleanYouTubeText(item.snippet?.title ?? 'Video sem titulo'),
+        artist: item.snippet?.channelTitle ?? 'YouTube',
+        album: 'YouTube',
+        artwork:
+          item.snippet?.thumbnails?.high?.url ??
+          item.snippet?.thumbnails?.medium?.url ??
+          item.snippet?.thumbnails?.default?.url,
+        previewUrl: '',
+        externalUrl: `https://music.youtube.com/watch?v=${videoId}`,
+        source: 'YouTube',
+        downloadable: false,
+        unavailableReason: 'Resultado oficial do YouTube: abrir no YouTube Music, sem download direto.',
+      };
+    });
 }
 
 async function searchITunes(query: string): Promise<DownloadCandidate[]> {
@@ -257,6 +332,15 @@ function firstString(value?: string | string[]) {
 
 function encodeArchivePath(path: string) {
   return path.split('/').map(encodeURIComponent).join('/');
+}
+
+function cleanYouTubeText(value: string) {
+  return value
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>');
 }
 
 function dedupeCandidates(candidates: DownloadCandidate[]) {

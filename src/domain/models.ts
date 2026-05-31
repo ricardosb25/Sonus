@@ -33,8 +33,11 @@ export interface DownloadCandidate {
   album: string;
   artwork?: string;
   previewUrl: string;
+  externalUrl?: string;
   duration?: number;
   source: string;
+  downloadable?: boolean;
+  unavailableReason?: string;
 }
 
 export type DownloadQueueStatus = 'queued' | 'downloading' | 'paused' | 'completed' | 'error';

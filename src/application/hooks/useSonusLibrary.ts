@@ -206,6 +206,14 @@ export function useSonusLibrary({
 
   const addDownloadedTrack = useCallback(
     (candidate: DownloadCandidate) => {
+      if (candidate.downloadable === false || !candidate.previewUrl) {
+        Alert.alert(
+          candidate.source,
+          candidate.unavailableReason ?? 'Esse resultado nao possui uma URL de audio baixavel.',
+        );
+        return;
+      }
+
       const queueItem: DownloadQueueItem = {
         id: `${candidate.id}-${Date.now()}`,
         candidate,
