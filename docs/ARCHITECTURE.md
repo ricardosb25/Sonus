@@ -51,7 +51,7 @@ Exemplos:
 
 - `LibraryService`: grava `library.json`, copia arquivos e baixa audio.
 - `SettingsService`: grava `settings.json`.
-- `OnlineMusicService`: chama Audius, Internet Archive e Lyrics.ovh.
+- `OnlineMusicService`: chama motores habilitados, como Audius, Internet Archive, iTunes, Deezer e Lyrics.ovh.
 - `TrackPlaybackService`: controla reproducao nativa via `expo-audio`.
 
 ### Presentation

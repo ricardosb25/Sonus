@@ -22,6 +22,7 @@ export async function loadSettings(): Promise<AppSettings> {
       ...defaultSettings,
       ...parsed,
       language: parsed.language ?? defaultSettings.language,
+      searchEngines: parsed.searchEngines ?? defaultSettings.searchEngines,
       equalizer: {
         ...defaultSettings.equalizer,
         ...parsed.equalizer,

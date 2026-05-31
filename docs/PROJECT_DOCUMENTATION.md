@@ -16,7 +16,12 @@ Sonus e um aplicativo mobile para ouvir musica offline. O usuario pode buscar pr
 
 ### Busca e download
 
-- Usa Audius e Internet Archive para buscar musicas completas.
+- Usa motores configuraveis:
+  - Audius.
+  - Internet Archive.
+  - iTunes Preview.
+  - Deezer Preview.
+- YouTube aparece como indisponivel para download, sem extracao de audio.
 - Executa buscas em paralelo.
 - Remove duplicados por titulo, artista e album.
 - Exibe a fonte de cada resultado.
@@ -57,6 +62,7 @@ Sonus e um aplicativo mobile para ouvir musica offline. O usuario pode buscar pr
   - Ingles.
   - Japones.
 - Equalizador.
+- Motores de busca.
 - Persistencia em `settings.json`.
 
 ### Widgets Android
@@ -109,7 +115,7 @@ interface AppSettings {
 ## Limites atuais
 
 - Equalizador ainda nao aplica DSP real ao audio. A UI e a persistencia estao preparadas para receber um modulo nativo.
-- Busca online usa fontes com previews ou streaming permitido. Para catalogo completo, e preciso integrar uma API licenciada.
+- YouTube nao faz extracao/download de audio no Sonus. Para catalogo completo, e preciso integrar uma API licenciada ou fonte autorizada.
 - Widgets Android dependem de prebuild/build nativo; nao aparecem apenas no Expo Go.
 
 ## Proximos passos recomendados

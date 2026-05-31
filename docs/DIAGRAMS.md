@@ -35,7 +35,7 @@ sequenceDiagram
   Screen->>Hook: runSearch()
   Hook->>Discovery: search(query)
   Discovery->>Online: searchMusic(query)
-  Online-->>Discovery: resultados Audius e Internet Archive completos
+  Online-->>Discovery: resultados dos motores habilitados
   Discovery-->>Hook: DownloadCandidate[]
   Hook-->>Screen: resultados
   User->>Screen: Baixa resultado

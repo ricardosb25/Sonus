@@ -3,10 +3,10 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   View,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useAppSettings } from '../application/hooks/useAppSettings';
 import { useSonusLibrary } from '../application/hooks/useSonusLibrary';
 import { AppHeader } from './components/AppHeader';
@@ -28,14 +28,18 @@ export function AppRoot() {
   const settings = useAppSettings();
 
   return (
-    <ThemeProvider themeMode={settings.state.settings.themeMode}>
-      <AppRootContent settings={settings} />
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider themeMode={settings.state.settings.themeMode}>
+        <AppRootContent settings={settings} />
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }
 
 function AppRootContent({ settings }: { settings: ReturnType<typeof useAppSettings> }) {
-  const { state, actions } = useSonusLibrary();
+  const { state, actions } = useSonusLibrary({
+    enabledSearchEngines: settings.state.settings.searchEngines,
+  });
   const styles = useThemedStyles();
 
   if (!state.ready || !settings.state.ready) {
@@ -47,7 +51,7 @@ function AppRootContent({ settings }: { settings: ReturnType<typeof useAppSettin
   }
 
   return (
-    <SafeAreaView style={styles.root}>
+    <SafeAreaView style={styles.root} edges={['top', 'left', 'right']}>
       <StatusBar style={settings.state.settings.themeMode === 'dark' ? 'light' : 'dark'} />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -183,9 +187,11 @@ function AppRootContent({ settings }: { settings: ReturnType<typeof useAppSettin
           visible={settings.state.settingsOpen}
           themeMode={settings.state.settings.themeMode}
           language={settings.state.settings.language}
+          searchEngines={settings.state.settings.searchEngines}
           equalizer={settings.state.settings.equalizer}
           onThemeChange={settings.actions.updateTheme}
           onLanguageChange={settings.actions.updateLanguage}
+          onToggleSearchEngine={settings.actions.toggleSearchEngine}
           onEqualizerEnabledChange={settings.actions.updateEqualizerEnabled}
           onEqualizerPresetChange={settings.actions.updateEqualizerPreset}
           onEqualizerBandGainChange={settings.actions.updateEqualizerBandGain}

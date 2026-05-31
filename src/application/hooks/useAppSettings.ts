@@ -7,7 +7,7 @@ import {
   updateEqualizerBand,
 } from '../../domain/equalizer';
 import { AppLanguage } from '../../domain/language';
-import { AppSettings, AppThemeMode, defaultSettings } from '../../domain/settings';
+import { AppSettings, AppThemeMode, defaultSettings, SearchEngineId } from '../../domain/settings';
 
 type Dependencies = {
   settingsRepository?: SettingsRepository;
@@ -46,6 +46,21 @@ export function useAppSettings({
   const updateLanguage = useCallback(
     async (language: AppLanguage) => {
       const next = { ...settings, language };
+      setSettings(next);
+      await settingsRepository.save(next);
+    },
+    [settings, settingsRepository],
+  );
+
+  const toggleSearchEngine = useCallback(
+    async (engine: SearchEngineId) => {
+      if (engine === 'youtube') return;
+
+      const enabled = settings.searchEngines.includes(engine);
+      const nextEngines = enabled
+        ? settings.searchEngines.filter((item) => item !== engine)
+        : [...settings.searchEngines, engine];
+      const next = { ...settings, searchEngines: nextEngines };
       setSettings(next);
       await settingsRepository.save(next);
     },
@@ -101,6 +116,7 @@ export function useAppSettings({
       setSettingsOpen,
       updateTheme,
       updateLanguage,
+      toggleSearchEngine,
       updateEqualizerEnabled,
       updateEqualizerPreset,
       updateEqualizerBandGain,

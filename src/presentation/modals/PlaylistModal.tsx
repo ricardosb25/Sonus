@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, Modal, SafeAreaView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { FlatList, Modal, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { resolvePlaylistTracks } from '../../domain/librarySelectors';
 import { Playlist, Track } from '../../domain/models';
 import { ActionButton } from '../components/ActionButton';
@@ -48,7 +49,7 @@ export function PlaylistModal(props: Props) {
 
   return (
     <Modal visible={!!props.playlist} animationType="slide" onRequestClose={props.onClose}>
-      <SafeAreaView style={styles.modal}>
+      <SafeAreaView style={styles.modal} edges={['top', 'bottom', 'left', 'right']}>
         <View style={styles.modalHeader}>
           <TextInput value={name} onChangeText={setName} style={styles.modalTitleInput} />
           <TouchableOpacity onPress={props.onClose}>

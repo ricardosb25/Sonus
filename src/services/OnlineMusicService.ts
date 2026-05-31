@@ -1,8 +1,30 @@
 import { DownloadCandidate } from '../types';
+import { SearchEngineId } from '../domain/settings';
 
 type SearchProvider = {
+  id: ActiveSearchEngineId;
   name: string;
   search(query: string): Promise<DownloadCandidate[]>;
+};
+type ActiveSearchEngineId = Exclude<SearchEngineId, 'youtube'>;
+
+type ITunesResult = {
+  trackId?: number;
+  trackName?: string;
+  artistName?: string;
+  collectionName?: string;
+  artworkUrl100?: string;
+  previewUrl?: string;
+  trackTimeMillis?: number;
+};
+
+type DeezerResult = {
+  id?: number;
+  title?: string;
+  duration?: number;
+  preview?: string;
+  artist?: { name?: string };
+  album?: { title?: string; cover_xl?: string; cover_big?: string };
 };
 
 type AudiusTrack = {
@@ -46,16 +68,26 @@ type InternetArchiveMetadata = {
 };
 
 const providers: SearchProvider[] = [
-  { name: 'Audius', search: searchAudius },
-  { name: 'Internet Archive', search: searchInternetArchive },
+  { id: 'audius', name: 'Audius', search: searchAudius },
+  { id: 'internetArchive', name: 'Internet Archive', search: searchInternetArchive },
+  { id: 'itunes', name: 'iTunes Preview', search: searchITunes },
+  { id: 'deezer', name: 'Deezer Preview', search: searchDeezer },
 ];
 
-export async function searchMusic(query: string): Promise<DownloadCandidate[]> {
+export async function searchMusic(
+  query: string,
+  enabledEngines: SearchEngineId[] = ['audius', 'internetArchive', 'itunes', 'deezer'],
+): Promise<DownloadCandidate[]> {
   const term = query.trim();
   if (!term) return [];
+  const enabled = new Set(
+    enabledEngines.filter((engine): engine is ActiveSearchEngineId => engine !== 'youtube'),
+  );
+  const activeProviders = providers.filter((provider) => enabled.has(provider.id));
+  if (!activeProviders.length) return [];
 
   const settled = await Promise.allSettled(
-    providers.map(async (provider) => provider.search(term)),
+    activeProviders.map(async (provider) => provider.search(term)),
   );
 
   const candidates = settled.flatMap((result) =>
@@ -63,6 +95,48 @@ export async function searchMusic(query: string): Promise<DownloadCandidate[]> {
   );
 
   return dedupeCandidates(candidates).slice(0, 36);
+}
+
+async function searchITunes(query: string): Promise<DownloadCandidate[]> {
+  const response = await fetch(
+    `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=music&entity=song&limit=24`,
+  );
+  const data = await response.json();
+  const results = Array.isArray(data.results) ? (data.results as ITunesResult[]) : [];
+
+  return results
+    .filter((item) => item.previewUrl && item.trackName)
+    .map((item) => ({
+      id: `itunes-${item.trackId ?? item.previewUrl}`,
+      title: item.trackName ?? 'Musica sem titulo',
+      artist: item.artistName ?? 'Artista desconhecido',
+      album: item.collectionName ?? 'Album desconhecido',
+      artwork: item.artworkUrl100?.replace('100x100bb', '600x600bb'),
+      previewUrl: item.previewUrl ?? '',
+      duration: item.trackTimeMillis ? Math.round(item.trackTimeMillis / 1000) : undefined,
+      source: 'iTunes Preview',
+    }));
+}
+
+async function searchDeezer(query: string): Promise<DownloadCandidate[]> {
+  const response = await fetch(
+    `https://api.deezer.com/search?q=${encodeURIComponent(query)}&limit=24`,
+  );
+  const data = await response.json();
+  const results = Array.isArray(data.data) ? (data.data as DeezerResult[]) : [];
+
+  return results
+    .filter((item) => item.preview && item.title)
+    .map((item) => ({
+      id: `deezer-${item.id ?? item.preview}`,
+      title: item.title ?? 'Musica sem titulo',
+      artist: item.artist?.name ?? 'Artista desconhecido',
+      album: item.album?.title ?? 'Album desconhecido',
+      artwork: item.album?.cover_xl ?? item.album?.cover_big,
+      previewUrl: item.preview ?? '',
+      duration: item.duration,
+      source: 'Deezer Preview',
+    }));
 }
 
 async function searchAudius(query: string): Promise<DownloadCandidate[]> {

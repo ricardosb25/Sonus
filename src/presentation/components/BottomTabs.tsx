@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppTab } from '../../domain/models';
 import { useThemedStyles } from '../styles/styles';
 
@@ -17,9 +18,10 @@ type Props = {
 
 export function BottomTabs({ activeTab, onChange }: Props) {
   const styles = useThemedStyles();
+  const insets = useSafeAreaInsets();
 
   return (
-    <View style={styles.tabs}>
+    <View style={[styles.tabs, { paddingBottom: Math.max(10, insets.bottom + 8) }]}>
       {tabs.map((tab) => (
         <TouchableOpacity
           key={tab.id}

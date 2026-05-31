@@ -6,7 +6,7 @@ Ele foi reconstruido com Expo + React Native, armazenamento local, player nativo
 
 ## Destaques
 
-- Busca online por musicas completas via Audius e Internet Archive.
+- Busca online configuravel: Audius, Internet Archive, iTunes Preview e Deezer Preview.
 - Download por resultado de busca ou URL direta de audio, com fila para acompanhar, pausar, retomar e excluir downloads.
 - Importacao de arquivos de audio do dispositivo.
 - Biblioteca offline persistida no armazenamento interno do app.
@@ -15,7 +15,7 @@ Ele foi reconstruido com Expo + React Native, armazenamento local, player nativo
 - Selecao multipla para favoritar, adicionar a playlist e excluir do dispositivo.
 - Letras online via Lyrics.ovh, salvas quando encontradas.
 - Filtros por todas, favoritas, artistas e albuns.
-- Configuracoes de tema, idioma e equalizador.
+- Configuracoes de tema, idioma, equalizador e motores de busca.
 - Widgets Android de tela inicial em dois tamanhos.
 
 ## Documentacao
@@ -94,6 +94,6 @@ node --check plugins/withSonusAndroidWidgets.js
 
 ## Observacoes
 
-- A versao atual evita download nao oficial do YouTube. Para musicas completas, conecte uma fonte licenciada/propria no fluxo de URL direta ou em `src/services/OnlineMusicService.ts`.
+- A versao atual evita extracao/download nao oficial do YouTube. Para musicas completas, use fontes com download/stream permitido ou URL direta autorizada.
 - A interface e persistencia do equalizador estao prontas, mas DSP real exige um modulo nativo de audio effect plugado por plataforma.
 - Widgets Android sao gerados no `expo prebuild` pelo plugin `plugins/withSonusAndroidWidgets.js`.

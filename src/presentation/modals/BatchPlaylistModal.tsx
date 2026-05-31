@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Modal, SafeAreaView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Modal, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Playlist } from '../../domain/models';
 import { EmptyState } from '../components/EmptyState';
 import { useThemedStyles } from '../styles/styles';
@@ -31,7 +32,7 @@ export function BatchPlaylistModal({
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
-      <SafeAreaView style={styles.modal}>
+      <SafeAreaView style={styles.modal} edges={['top', 'bottom', 'left', 'right']}>
         <View style={styles.modalHeader}>
           <Text style={styles.sectionTitle}>{selectedCount} musica(s)</Text>
           <TouchableOpacity onPress={onClose}>

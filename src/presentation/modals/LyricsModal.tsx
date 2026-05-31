@@ -1,5 +1,6 @@
 import React from 'react';
-import { ActivityIndicator, Modal, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Track } from '../../domain/models';
 import { useThemedStyles } from '../styles/styles';
 
@@ -14,7 +15,7 @@ export function LyricsModal({ track, loading, onClose }: Props) {
 
   return (
     <Modal visible={!!track} animationType="slide" onRequestClose={onClose}>
-      <SafeAreaView style={styles.modal}>
+      <SafeAreaView style={styles.modal} edges={['top', 'bottom', 'left', 'right']}>
         <View style={styles.modalHeader}>
           <Text style={styles.sectionTitle} numberOfLines={1}>{track?.title}</Text>
           <TouchableOpacity onPress={onClose}>

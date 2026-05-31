@@ -20,6 +20,7 @@ import {
   Playlist,
   Track,
 } from '../../domain/models';
+import { SearchEngineId } from '../../domain/settings';
 
 const initialLibrary: LibraryData = { tracks: [], playlists: [], lastUpdated: '' };
 const initialPlayback: PlaybackSnapshot = {
@@ -37,6 +38,7 @@ type Dependencies = {
   musicDiscoveryService?: MusicDiscoveryService;
   playbackService?: PlaybackService;
   audioFilePickerService?: AudioFilePickerService;
+  enabledSearchEngines?: SearchEngineId[];
 };
 
 export function useSonusLibrary({
@@ -44,6 +46,7 @@ export function useSonusLibrary({
   musicDiscoveryService = onlineMusicDiscoveryService,
   playbackService = trackPlaybackService,
   audioFilePickerService = expoAudioFilePickerService,
+  enabledSearchEngines = ['audius', 'internetArchive', 'itunes', 'deezer'],
 }: Dependencies = {}) {
   const [ready, setReady] = useState(false);
   const [tab, setTab] = useState<AppTab>('download');
@@ -188,14 +191,14 @@ export function useSonusLibrary({
 
     setBusy('search');
     try {
-      setResults(await musicDiscoveryService.search(query));
+      setResults(await musicDiscoveryService.search(query, enabledSearchEngines));
       setVisibleSearchResultCount(initialVisibleSearchResults);
     } catch {
       Alert.alert('Sonus', 'Nao foi possivel buscar musicas agora. Verifique sua conexao.');
     } finally {
       setBusy('');
     }
-  }, [musicDiscoveryService, query]);
+  }, [enabledSearchEngines, musicDiscoveryService, query]);
 
   const showMoreSearchResults = useCallback(() => {
     setVisibleSearchResultCount((current) => Math.min(current + searchResultsStep, results.length));

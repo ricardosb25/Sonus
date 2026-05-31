@@ -1,6 +1,7 @@
 import Slider from '@react-native-community/slider';
 import React, { useState } from 'react';
-import { Modal, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { trackPlaybackService } from '../../application/services/TrackPlaybackService';
 import type { PlaybackSnapshot } from '../../application/services/TrackPlaybackService';
 import { EqualizerPresetId, EqualizerSettings } from '../../domain/equalizer';
@@ -42,7 +43,7 @@ export function PlayerModal({
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
-      <SafeAreaView style={styles.player}>
+      <SafeAreaView style={styles.player} edges={['top', 'bottom', 'left', 'right']}>
         <View style={styles.modalHeader}>
           <Text style={styles.sectionTitle}>Tocando agora</Text>
           <TouchableOpacity onPress={onClose}>
