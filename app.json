@@ -25,7 +25,10 @@
       "permissions": [
         "INTERNET",
         "FOREGROUND_SERVICE",
-        "FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+        "FOREGROUND_SERVICE_MEDIA_PLAYBACK",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.INTERNET"
       ]
     },
     "plugins": [
@@ -47,8 +50,9 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "c5e460eb-1103-4ba9-83d9-4df87bc4cbe6"
+        "projectId": "b1134018-b5ea-49d5-a41e-d0e763ec6612"
       }
-    }
+    },
+    "owner": "ricdev25"
   }
 }
