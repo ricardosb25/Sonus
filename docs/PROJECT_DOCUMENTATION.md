@@ -36,7 +36,7 @@ Sonus e um aplicativo mobile para ouvir musica offline. O usuario pode buscar pr
 
 ### Player
 
-- Usa `react-native-track-player`.
+- Usa `expo-audio`.
 - Suporta fila, play/pause, anterior, proxima e seek.
 - Modos:
   - Aleatorio.
@@ -101,7 +101,7 @@ interface AppSettings {
 - `src/data/repositories/SettingsRepository.ts`: contrato/adaptador de configuracoes.
 - `src/application/hooks/useSonusLibrary.ts`: casos de uso da biblioteca.
 - `src/application/hooks/useAppSettings.ts`: casos de uso de configuracoes.
-- `src/application/services/TrackPlaybackService.ts`: controle do player.
+- `src/application/services/TrackPlaybackService.ts`: controle do player com `expo-audio`.
 - `src/services/OnlineMusicService.ts`: provedores de busca.
 - `src/services/LibraryService.ts`: IO local de biblioteca e audio.
 - `src/presentation/AppRoot.tsx`: composicao da UI.

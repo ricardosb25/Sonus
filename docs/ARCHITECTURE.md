@@ -52,7 +52,7 @@ Exemplos:
 - `LibraryService`: grava `library.json`, copia arquivos e baixa audio.
 - `SettingsService`: grava `settings.json`.
 - `OnlineMusicService`: chama iTunes, Deezer, Audius e Lyrics.ovh.
-- `TrackPlayerService`: configura o player nativo.
+- `TrackPlaybackService`: controla reproducao nativa via `expo-audio`.
 
 ### Presentation
 

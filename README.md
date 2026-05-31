@@ -30,7 +30,7 @@ Ele foi reconstruido com Expo + React Native, armazenamento local, player nativo
 - React 19
 - React Native 0.83
 - TypeScript
-- react-native-track-player
+- expo-audio
 - expo-file-system
 - expo-document-picker
 - EAS Build
@@ -73,7 +73,7 @@ Para Android com dev client:
 npm run android
 ```
 
-Como o app usa `react-native-track-player`, o fluxo com dev client costuma ser mais confiavel que Expo Go.
+Para testar recursos nativos com o mesmo comportamento da build final, prefira `npm run android` ou uma build EAS instalada no aparelho.
 
 ## Gerar APK
 
