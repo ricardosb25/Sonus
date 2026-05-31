@@ -6,7 +6,7 @@ Ele foi reconstruido com Expo + React Native, armazenamento local, player nativo
 
 ## Destaques
 
-- Busca multi-fonte: iTunes Preview, Deezer Preview e Audius.
+- Busca online por musicas completas via Audius.
 - Download por resultado de busca ou URL direta de audio, com fila para acompanhar, pausar, retomar e excluir downloads.
 - Importacao de arquivos de audio do dispositivo.
 - Biblioteca offline persistida no armazenamento interno do app.

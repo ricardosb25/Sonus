@@ -2,7 +2,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert } from 'react-native';
 import { fileSystemLibraryRepository, LibraryRepository } from '../../data/repositories/LibraryRepository';
 import { onlineMusicDiscoveryService, MusicDiscoveryService } from '../services/MusicDiscoveryService';
-import { trackPlaybackService, PlaybackService } from '../services/TrackPlaybackService';
+import {
+  PlaybackService,
+  PlaybackSnapshot,
+  trackPlaybackService,
+} from '../services/TrackPlaybackService';
 import { AudioFilePickerService, expoAudioFilePickerService } from '../services/AudioFilePickerService';
 import { buildTracksById, getVisibleTracks, groupTracks } from '../../domain/librarySelectors';
 import { createPlaylist } from '../../domain/playlistFactory';
@@ -18,6 +22,15 @@ import {
 } from '../../domain/models';
 
 const initialLibrary: LibraryData = { tracks: [], playlists: [], lastUpdated: '' };
+const initialPlayback: PlaybackSnapshot = {
+  track: null,
+  playing: false,
+  position: 0,
+  duration: 0,
+  mode: 'no-repeat',
+};
+const initialVisibleSearchResults = 3;
+const searchResultsStep = 6;
 
 type Dependencies = {
   libraryRepository?: LibraryRepository;
@@ -38,6 +51,7 @@ export function useSonusLibrary({
   const [filter, setFilter] = useState<LibraryFilter>('all');
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<DownloadCandidate[]>([]);
+  const [visibleSearchResultCount, setVisibleSearchResultCount] = useState(initialVisibleSearchResults);
   const [downloadQueue, setDownloadQueue] = useState<DownloadQueueItem[]>([]);
   const [busy, setBusy] = useState('');
   const [directUrl, setDirectUrl] = useState('');
@@ -54,8 +68,7 @@ export function useSonusLibrary({
   const [lyricsTrack, setLyricsTrack] = useState<Track | null>(null);
   const [lyricsLoading, setLyricsLoading] = useState(false);
   const [playerOpen, setPlayerOpen] = useState(false);
-  const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
-  const [playerPlaying, setPlayerPlaying] = useState(false);
+  const [playback, setPlayback] = useState<PlaybackSnapshot>(initialPlayback);
   const [selectedTrackIds, setSelectedTrackIds] = useState<string[]>([]);
   const [batchPlaylistOpen, setBatchPlaylistOpen] = useState(false);
   const activeDownloadRef = useRef<{ id: string; pause: () => Promise<void> } | null>(null);
@@ -80,6 +93,8 @@ export function useSonusLibrary({
 
     boot();
   }, [libraryRepository]);
+
+  useEffect(() => playbackService.subscribe(setPlayback), [playbackService]);
 
   const persist = useCallback(
     async (next: LibraryData) => {
@@ -163,6 +178,10 @@ export function useSonusLibrary({
     () => selectedTrackIds.map((id) => tracksById.get(id)).filter((track): track is Track => Boolean(track)),
     [selectedTrackIds, tracksById],
   );
+  const visibleSearchResults = useMemo(
+    () => results.slice(0, visibleSearchResultCount),
+    [results, visibleSearchResultCount],
+  );
 
   const runSearch = useCallback(async () => {
     if (!query.trim()) return;
@@ -170,12 +189,17 @@ export function useSonusLibrary({
     setBusy('search');
     try {
       setResults(await musicDiscoveryService.search(query));
+      setVisibleSearchResultCount(initialVisibleSearchResults);
     } catch {
       Alert.alert('Sonus', 'Nao foi possivel buscar musicas agora. Verifique sua conexao.');
     } finally {
       setBusy('');
     }
   }, [musicDiscoveryService, query]);
+
+  const showMoreSearchResults = useCallback(() => {
+    setVisibleSearchResultCount((current) => Math.min(current + searchResultsStep, results.length));
+  }, [results.length]);
 
   const addDownloadedTrack = useCallback(
     (candidate: DownloadCandidate) => {
@@ -304,19 +328,26 @@ export function useSonusLibrary({
     async (tracks: Track[], startId?: string) => {
       if (!tracks.length) return;
 
-      const selectedTrack = tracks.find((track) => track.id === startId) ?? tracks[0];
-      setCurrentTrack(selectedTrack);
-
       try {
         await playbackService.playQueue(tracks, startId);
-        setPlayerPlaying(true);
       } catch {
-        setPlayerPlaying(false);
         Alert.alert('Sonus', 'Nao foi possivel iniciar o player neste dispositivo.');
       }
     },
     [playbackService],
   );
+
+  const togglePlayback = useCallback(async () => {
+    try {
+      if (playback.playing) {
+        await playbackService.pause();
+      } else {
+        await playbackService.play();
+      }
+    } catch {
+      Alert.alert('Sonus', 'Nao foi possivel controlar a reproducao agora.');
+    }
+  }, [playback.playing, playbackService]);
 
   const toggleFavorite = useCallback(
     async (track: Track) => {
@@ -562,6 +593,8 @@ export function useSonusLibrary({
       filter,
       query,
       results,
+      visibleSearchResults,
+      canShowMoreSearchResults: visibleSearchResultCount < results.length,
       downloadQueue,
       busy,
       directUrl,
@@ -578,8 +611,7 @@ export function useSonusLibrary({
       lyricsTrack,
       lyricsLoading,
       playerOpen,
-      currentTrack,
-      playerPlaying,
+      playback,
       selectedTrackIds,
       selectedTracks,
       batchPlaylistOpen,
@@ -605,6 +637,7 @@ export function useSonusLibrary({
       setPlayerOpen,
       setBatchPlaylistOpen,
       runSearch,
+      showMoreSearchResults,
       addDownloadedTrack,
       addDirectDownload,
       pauseDownload,
@@ -613,6 +646,7 @@ export function useSonusLibrary({
       pickAudioFile,
       importSelectedAudioFile,
       playTracks,
+      togglePlayback,
       toggleFavorite,
       confirmDeleteTrack,
       openLyrics,

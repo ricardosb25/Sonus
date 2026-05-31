@@ -94,6 +94,8 @@ function createThemedStyles(themeMode: AppThemeMode) {
     muted: { color: palette.textMuted, fontSize: 12, marginTop: 3 },
     iconButton: { borderRadius: 8, paddingHorizontal: 12, paddingVertical: 9, backgroundColor: palette.surfaceRaised },
     iconButtonText: { color: palette.accent, fontWeight: '800' },
+    showMoreButton: { minHeight: 44, borderRadius: 8, borderColor: palette.borderStrong, borderWidth: 1, alignItems: 'center', justifyContent: 'center', marginTop: 10, marginBottom: 18 },
+    showMoreText: { color: palette.accent, fontWeight: '900' },
     actions: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-end', gap: 6, maxWidth: 160 },
     action: { borderRadius: 8, paddingHorizontal: 8, paddingVertical: 6, backgroundColor: palette.surface },
     actionActive: { backgroundColor: palette.accent },

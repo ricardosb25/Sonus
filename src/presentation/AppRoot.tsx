@@ -63,7 +63,9 @@ function AppRootContent({ settings }: { settings: ReturnType<typeof useAppSettin
         {state.tab === 'download' && (
           <DownloadScreen
             query={state.query}
-            results={state.results}
+            results={state.visibleSearchResults}
+            totalResults={state.results.length}
+            canShowMore={state.canShowMoreSearchResults}
             busy={state.busy}
             directUrl={state.directUrl}
             directTitle={state.directTitle}
@@ -75,6 +77,7 @@ function AppRootContent({ settings }: { settings: ReturnType<typeof useAppSettin
             importAlbum={state.importAlbum}
             onQueryChange={actions.setQuery}
             onSearch={actions.runSearch}
+            onShowMore={actions.showMoreSearchResults}
             onDownload={actions.addDownloadedTrack}
             onDirectUrlChange={actions.setDirectUrl}
             onDirectTitleChange={actions.setDirectTitle}
@@ -130,9 +133,10 @@ function AppRootContent({ settings }: { settings: ReturnType<typeof useAppSettin
         )}
 
         <MiniPlayer
-          track={state.currentTrack}
-          playing={state.playerPlaying}
+          track={state.playback.track}
+          playing={state.playback.playing}
           onOpen={() => actions.setPlayerOpen(true)}
+          onTogglePlayback={actions.togglePlayback}
         />
         <BottomTabs activeTab={state.tab} onChange={actions.setTab} />
 
@@ -167,9 +171,9 @@ function AppRootContent({ settings }: { settings: ReturnType<typeof useAppSettin
         />
         <PlayerModal
           visible={state.playerOpen}
-          track={state.currentTrack}
-          playing={state.playerPlaying}
+          playback={state.playback}
           equalizer={settings.state.settings.equalizer}
+          onTogglePlayback={actions.togglePlayback}
           onClose={() => actions.setPlayerOpen(false)}
           onEqualizerEnabledChange={settings.actions.updateEqualizerEnabled}
           onEqualizerPresetChange={settings.actions.updateEqualizerPreset}

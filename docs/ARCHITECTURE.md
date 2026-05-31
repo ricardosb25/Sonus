@@ -51,7 +51,7 @@ Exemplos:
 
 - `LibraryService`: grava `library.json`, copia arquivos e baixa audio.
 - `SettingsService`: grava `settings.json`.
-- `OnlineMusicService`: chama iTunes, Deezer, Audius e Lyrics.ovh.
+- `OnlineMusicService`: chama Audius e Lyrics.ovh.
 - `TrackPlaybackService`: controla reproducao nativa via `expo-audio`.
 
 ### Presentation
@@ -83,7 +83,8 @@ Componentes recebem props e chamam actions. Eles nao fazem IO diretamente.
 
 1. Abra `src/services/OnlineMusicService.ts`.
 2. Crie uma funcao `searchNovoProvedor(query)`.
-3. Mapeie o resultado para `DownloadCandidate`.
+3. Garanta que o provedor entregue audio completo, nao apenas preview.
+4. Mapeie o resultado para `DownloadCandidate`.
 4. Adicione o provedor no array `providers`.
 
 ## Como adicionar uma nova configuracao

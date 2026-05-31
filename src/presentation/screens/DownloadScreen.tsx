@@ -7,6 +7,8 @@ import { useThemedStyles } from '../styles/styles';
 type Props = {
   query: string;
   results: DownloadCandidate[];
+  totalResults: number;
+  canShowMore: boolean;
   busy: string;
   directUrl: string;
   directTitle: string;
@@ -18,6 +20,7 @@ type Props = {
   importAlbum: string;
   onQueryChange: (value: string) => void;
   onSearch: () => void;
+  onShowMore: () => void;
   onDownload: (candidate: DownloadCandidate) => void;
   onDirectUrlChange: (value: string) => void;
   onDirectTitleChange: (value: string) => void;
@@ -64,6 +67,13 @@ export function DownloadScreen(props: Props) {
           onDownload={() => props.onDownload(item)}
         />
       ))}
+      {props.canShowMore && (
+        <TouchableOpacity style={styles.showMoreButton} onPress={props.onShowMore}>
+          <Text style={styles.showMoreText}>
+            Mostrar mais ({props.results.length}/{props.totalResults})
+          </Text>
+        </TouchableOpacity>
+      )}
 
       <Text style={styles.sectionTitle}>URL direta</Text>
       <TextInput
