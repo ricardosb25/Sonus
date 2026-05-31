@@ -1,20 +1,17 @@
 import React from 'react';
 import { Text, TouchableOpacity } from 'react-native';
-import { State, useActiveTrack, usePlaybackState } from 'react-native-track-player';
 import { trackPlaybackService } from '../../application/services/TrackPlaybackService';
+import { Track } from '../../domain/models';
 import { useThemedStyles } from '../styles/styles';
 
-export function MiniPlayer({ onOpen }: { onOpen: () => void }) {
+export function MiniPlayer({ track, playing, onOpen }: { track: Track | null; playing: boolean; onOpen: () => void }) {
   const styles = useThemedStyles();
-  const activeTrack = useActiveTrack();
-  const playback = usePlaybackState();
-  const playing = playback.state === State.Playing;
 
-  if (!activeTrack) return null;
+  if (!track) return null;
 
   return (
     <TouchableOpacity style={styles.miniPlayer} onPress={onOpen}>
-      <Text style={styles.miniTitle} numberOfLines={1}>{activeTrack.title}</Text>
+      <Text style={styles.miniTitle} numberOfLines={1}>{track.title}</Text>
       <TouchableOpacity
         onPress={() => (playing ? trackPlaybackService.pause() : trackPlaybackService.play())}
         style={styles.miniControl}

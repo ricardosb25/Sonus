@@ -1,11 +1,11 @@
-import TrackPlayer, { 
-  Capability, 
-  AppKilledPlaybackBehavior,
-  Event,
-  RepeatMode,
-} from 'react-native-track-player';
-
 let setupPromise: Promise<boolean> | null = null;
+let serviceRegistered = false;
+
+declare const require: any;
+
+function getTrackPlayerModule() {
+  return require('react-native-track-player') as typeof import('react-native-track-player');
+}
 
 export const setupPlayer = async () => {
   setupPromise ??= setupPlayerOnce();
@@ -14,7 +14,15 @@ export const setupPlayer = async () => {
 
 async function setupPlayerOnce() {
   let isSetup = false;
+  const {
+    default: TrackPlayer,
+    AppKilledPlaybackBehavior,
+    Capability,
+    RepeatMode,
+  } = getTrackPlayerModule();
+
   try {
+    registerPlaybackService();
     await TrackPlayer.getActiveTrack();
     isSetup = true;
   } catch {
@@ -39,7 +47,17 @@ async function setupPlayerOnce() {
   }
 }
 
+function registerPlaybackService() {
+  if (serviceRegistered) return;
+
+  const { default: TrackPlayer } = getTrackPlayerModule();
+  TrackPlayer.registerPlaybackService(() => playbackService);
+  serviceRegistered = true;
+}
+
 export const playbackService = async function() {
+  const { default: TrackPlayer, Event } = getTrackPlayerModule();
+
   TrackPlayer.addEventListener(Event.RemotePlay, () => TrackPlayer.play());
   TrackPlayer.addEventListener(Event.RemotePause, () => TrackPlayer.pause());
   TrackPlayer.addEventListener(Event.RemoteNext, safeSkipToNext);
@@ -48,6 +66,8 @@ export const playbackService = async function() {
 };
 
 async function safeSkipToNext() {
+  const { default: TrackPlayer } = getTrackPlayerModule();
+
   try {
     await TrackPlayer.skipToNext();
   } catch {
@@ -57,6 +77,8 @@ async function safeSkipToNext() {
 }
 
 async function safeSkipToPrevious() {
+  const { default: TrackPlayer } = getTrackPlayerModule();
+
   try {
     await TrackPlayer.skipToPrevious();
   } catch {

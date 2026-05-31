@@ -54,6 +54,8 @@ export function useSonusLibrary({
   const [lyricsTrack, setLyricsTrack] = useState<Track | null>(null);
   const [lyricsLoading, setLyricsLoading] = useState(false);
   const [playerOpen, setPlayerOpen] = useState(false);
+  const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
+  const [playerPlaying, setPlayerPlaying] = useState(false);
   const [selectedTrackIds, setSelectedTrackIds] = useState<string[]>([]);
   const [batchPlaylistOpen, setBatchPlaylistOpen] = useState(false);
   const activeDownloadRef = useRef<{ id: string; pause: () => Promise<void> } | null>(null);
@@ -294,7 +296,20 @@ export function useSonusLibrary({
   ]);
 
   const playTracks = useCallback(
-    (tracks: Track[], startId?: string) => playbackService.playQueue(tracks, startId),
+    async (tracks: Track[], startId?: string) => {
+      if (!tracks.length) return;
+
+      const selectedTrack = tracks.find((track) => track.id === startId) ?? tracks[0];
+      setCurrentTrack(selectedTrack);
+
+      try {
+        await playbackService.playQueue(tracks, startId);
+        setPlayerPlaying(true);
+      } catch {
+        setPlayerPlaying(false);
+        Alert.alert('Sonus', 'Nao foi possivel iniciar o player neste dispositivo.');
+      }
+    },
     [playbackService],
   );
 
@@ -558,6 +573,8 @@ export function useSonusLibrary({
       lyricsTrack,
       lyricsLoading,
       playerOpen,
+      currentTrack,
+      playerPlaying,
       selectedTrackIds,
       selectedTracks,
       batchPlaylistOpen,

@@ -1,4 +1,3 @@
-import TrackPlayer, { RepeatMode } from 'react-native-track-player';
 import { PlaybackMode, Track } from '../../domain/models';
 import { setupPlayer } from '../../services/TrackPlayerService';
 
@@ -16,6 +15,7 @@ export const trackPlaybackService: PlaybackService = {
   async playQueue(tracks, startId) {
     if (!tracks.length) return;
     await ensurePlayerReady();
+    const { default: TrackPlayer } = getTrackPlayerModule();
 
     const startIndex = Math.max(0, tracks.findIndex((track) => track.id === startId));
 
@@ -35,20 +35,25 @@ export const trackPlaybackService: PlaybackService = {
   },
   async play() {
     await ensurePlayerReady();
+    const { default: TrackPlayer } = getTrackPlayerModule();
     await TrackPlayer.play();
   },
   async pause() {
     await ensurePlayerReady();
+    const { default: TrackPlayer } = getTrackPlayerModule();
     await TrackPlayer.pause();
   },
   next: safeSkipToNext,
   previous: safeSkipToPrevious,
   async seekTo(position) {
     await ensurePlayerReady();
+    const { default: TrackPlayer } = getTrackPlayerModule();
     await TrackPlayer.seekTo(position);
   },
   async setPlaybackMode(mode) {
     await ensurePlayerReady();
+    const { default: TrackPlayer, RepeatMode } = getTrackPlayerModule();
+
     if (mode === 'repeat-one') {
       await TrackPlayer.setRepeatMode(RepeatMode.Track);
       return;
@@ -62,6 +67,12 @@ export const trackPlaybackService: PlaybackService = {
   },
 };
 
+declare const require: any;
+
+function getTrackPlayerModule() {
+  return require('react-native-track-player') as typeof import('react-native-track-player');
+}
+
 async function ensurePlayerReady() {
   const ready = await setupPlayer();
   if (!ready) {
@@ -71,6 +82,8 @@ async function ensurePlayerReady() {
 
 async function safeSkipToNext() {
   await ensurePlayerReady();
+  const { default: TrackPlayer } = getTrackPlayerModule();
+
   try {
     await TrackPlayer.skipToNext();
   } catch {
@@ -81,6 +94,8 @@ async function safeSkipToNext() {
 
 async function safeSkipToPrevious() {
   await ensurePlayerReady();
+  const { default: TrackPlayer } = getTrackPlayerModule();
+
   try {
     await TrackPlayer.skipToPrevious();
   } catch {
@@ -90,6 +105,8 @@ async function safeSkipToPrevious() {
 
 async function shuffleCurrentQueue() {
   await ensurePlayerReady();
+  const { default: TrackPlayer } = getTrackPlayerModule();
+
   const queue = await TrackPlayer.getQueue();
   const activeTrack = await TrackPlayer.getActiveTrack();
   if (!queue.length || !activeTrack) return;

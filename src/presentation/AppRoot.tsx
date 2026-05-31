@@ -129,7 +129,11 @@ function AppRootContent({ settings }: { settings: ReturnType<typeof useAppSettin
           />
         )}
 
-        <MiniPlayer onOpen={() => actions.setPlayerOpen(true)} />
+        <MiniPlayer
+          track={state.currentTrack}
+          playing={state.playerPlaying}
+          onOpen={() => actions.setPlayerOpen(true)}
+        />
         <BottomTabs activeTab={state.tab} onChange={actions.setTab} />
 
         <LyricsModal
@@ -163,6 +167,8 @@ function AppRootContent({ settings }: { settings: ReturnType<typeof useAppSettin
         />
         <PlayerModal
           visible={state.playerOpen}
+          track={state.currentTrack}
+          playing={state.playerPlaying}
           equalizer={settings.state.settings.equalizer}
           onClose={() => actions.setPlayerOpen(false)}
           onEqualizerEnabledChange={settings.actions.updateEqualizerEnabled}

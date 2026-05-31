@@ -1,10 +1,9 @@
 import Slider from '@react-native-community/slider';
 import React, { useState } from 'react';
 import { Modal, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { State, useActiveTrack, usePlaybackState, useProgress } from 'react-native-track-player';
 import { trackPlaybackService } from '../../application/services/TrackPlaybackService';
 import { EqualizerPresetId, EqualizerSettings } from '../../domain/equalizer';
-import { PlaybackMode } from '../../domain/models';
+import { PlaybackMode, Track } from '../../domain/models';
 import { formatDuration } from '../../shared/formatDuration';
 import { Cover } from '../components/Cover';
 import { EqualizerPanel } from '../components/EqualizerPanel';
@@ -12,6 +11,8 @@ import { useThemedStyles } from '../styles/styles';
 
 type Props = {
   visible: boolean;
+  track: Track | null;
+  playing: boolean;
   equalizer: EqualizerSettings;
   onClose: () => void;
   onEqualizerEnabledChange: (enabled: boolean) => void;
@@ -21,6 +22,8 @@ type Props = {
 
 export function PlayerModal({
   visible,
+  track,
+  playing,
   equalizer,
   onClose,
   onEqualizerEnabledChange,
@@ -29,10 +32,7 @@ export function PlayerModal({
 }: Props) {
   const styles = useThemedStyles();
   const [playbackMode, setPlaybackMode] = useState<PlaybackMode>('no-repeat');
-  const activeTrack = useActiveTrack();
-  const playback = usePlaybackState();
-  const progress = useProgress();
-  const playing = playback.state === State.Playing;
+  const progress = { position: 0, duration: track?.duration ?? 0 };
 
   const changePlaybackMode = async (mode: PlaybackMode) => {
     setPlaybackMode(mode);
@@ -49,9 +49,9 @@ export function PlayerModal({
           </TouchableOpacity>
         </View>
         <ScrollView contentContainerStyle={styles.playerBody}>
-          <Cover uri={activeTrack?.artwork as string | undefined} />
-          <Text style={styles.nowTitle} numberOfLines={2}>{activeTrack?.title ?? 'Nada tocando'}</Text>
-          <Text style={styles.nowArtist}>{activeTrack?.artist ?? 'Escolha uma musica na biblioteca'}</Text>
+          <Cover uri={track?.artwork} />
+          <Text style={styles.nowTitle} numberOfLines={2}>{track?.title ?? 'Nada tocando'}</Text>
+          <Text style={styles.nowArtist}>{track?.artist ?? 'Escolha uma musica na biblioteca'}</Text>
           <Slider
             style={styles.slider}
             minimumValue={0}
